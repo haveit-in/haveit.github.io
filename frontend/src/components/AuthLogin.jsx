@@ -68,7 +68,7 @@ export default function AuthLogin({ onSuccess, onOpenSignup }) {
       <form className="form" onSubmit={onSubmit}>
         <TextField
           id="phone"
-          label="Mobile number"
+          label=""
           type="tel"
           inputMode="tel"
           autoComplete="tel"
