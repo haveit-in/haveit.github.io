@@ -18,15 +18,15 @@ const ChevronRightIcon = ({ size = 20 }) => (
 const foodCategories = [
   // Row 1
   { id: 1, name: 'Biryani', image: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=300&h=300&fit=crop' },
-  { id: 2, name: 'South Indian', image: 'https://images.unsplash.com/photo-1606491956689-2ea866880c84?w=300&h=300&fit=crop' },
+  { id: 2, name: 'South Indian', image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=300&h=300&fit=crop' },
   { id: 3, name: 'North Indian', image: 'https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=300&h=300&fit=crop' },
-  { id: 4, name: 'Desserts', image: 'https://images.unsplash.com/photo-1551024506-0bccd228d307?w=300&h=300&fit=crop' },
+  { id: 4, name: 'Desserts', image: 'https://images.unsplash.com/photo-1551024601-bec78aea704b?w=300&h=300&fit=crop' },
   { id: 5, name: 'Chinese', image: 'https://images.unsplash.com/photo-1525755662778-989d0524087e?w=300&h=300&fit=crop' },
   { id: 6, name: 'Cake', image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=300&h=300&fit=crop' },
-  { id: 7, name: 'Dosa', image: 'https://images.unsplash.com/photo-1665660716988-1d472b8e7d50?w=300&h=300&fit=crop' },
+  // { id: 7, name: 'Idly', image: 'https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=300&h=300&fit=crop' },
   // Row 2
   { id: 8, name: 'Burger', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=300&h=300&fit=crop' },
-  { id: 9, name: 'Shawarma', image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=300&h=300&fit=crop' },
+  // { id: 9, name: 'Shawarma', image: 'https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=300&h=300&fit=crop' },
   { id: 10, name: 'Salad', image: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=300&h=300&fit=crop' },
   { id: 11, name: 'Noodles', image: 'https://images.unsplash.com/photo-1569718212165-3a8278d5f624?w=300&h=300&fit=crop' },
   { id: 12, name: 'Rolls', image: 'https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=300&h=300&fit=crop' },

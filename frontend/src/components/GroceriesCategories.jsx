@@ -21,9 +21,9 @@ const groceryCategories = [
   { id: 3, name: 'Dairy', image: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?w=300&h=300&fit=crop' },
   { id: 4, name: 'Bread', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300&h=300&fit=crop' },
   { id: 5, name: 'Rice Atta and Dals', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300&h=300&fit=crop' },
-  { id: 6, name: 'Masalas and Spices', image: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=300&h=300&fit=crop' },
+  { id: 6, name: 'Masalas and Spices', image: 'https://images.unsplash.com/photo-1532336414038-cf19250c5757?w=300&h=300&fit=crop' },
   { id: 7, name: 'Oils and Ghee', image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=300&h=300&fit=crop' },
-  { id: 8, name: 'Munchies', image: 'https://images.unsplash.com/photo-1604467707321-70c1b85d7cd6?w=300&h=300&fit=crop' },
+  { id: 8, name: 'Munchies', image: 'https://images.unsplash.com/photo-1621447504864-d8686e12698c?w=300&h=300&fit=crop' },
 ]
 
 // Section Header Component with arrows
