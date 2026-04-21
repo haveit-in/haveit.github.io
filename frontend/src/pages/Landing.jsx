@@ -153,9 +153,6 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
             <div className="relative z-10 flex items-center justify-between h-20 gap-4">
               <div className="flex items-center gap-4 flex-shrink-0">
                 <LocationSelector isHeader />
-                <div className="w-[220px] max-w-[220px] h-10">
-                  <SearchBar placeholder={placeholder} />
-                </div>
               </div>
 
               <div className="absolute left-1/2 -translate-x-1/2 top-0 flex items-center h-20">
@@ -262,7 +259,8 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
       {/* MODE TOGGLE */}
       <div className="bg-white sticky top-14 md:top-20 z-40 border-b border-gray-100 md:border-b-0">
         <div className="md:max-w-6xl md:mx-auto md:px-6">
-          <div className="px-4 py-4 md:py-6 flex justify-center md:justify-start">
+          <div className="px-4 py-4 md:py-6 flex justify-center md:justify-between md:items-center gap-4">
+            {/* Mode Toggle Buttons */}
             <div className="bg-gray-100 rounded-2xl p-1 flex gap-1 md:max-w-sm w-full md:w-auto">
               <button
                 type="button"
@@ -289,53 +287,32 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                 <span>Groceries</span>
               </button>
             </div>
+            
+            {/* Search Bar - Desktop Only */}
+            <div className="hidden md:flex md:flex-1 md:max-w-xs">
+              <SearchBar 
+                placeholder={
+                  activeMode === 'food'
+                    ? 'Search for food, restaurants...'
+                    : 'Search for vegetables, groceries...'
+                }
+              />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* SEARCH BAR */}
-      <div className="bg-white px-4 md:px-0 py-4 md:py-6">
-        <div className="md:max-w-2xl md:mx-auto">
-          <div className="bg-gray-100 rounded-full px-4 py-3 flex items-center gap-3">
-            <Search size={20} className="text-gray-400" />
-            <input
-              type="text"
-              placeholder={
-                activeMode === 'food'
-                  ? 'Search for food, restaurants...'
-                  : 'Search for vegetables, groceries...'
-              }
-              className="flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400 text-sm"
-            />
-            <button
-              type="button"
-              className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-                activeMode === 'food'
-                  ? 'bg-orange-500 text-white hover:bg-orange-600'
-                  : 'bg-green-600 text-white hover:bg-green-700'
-              }`}
-              aria-label="Filters"
-            >
-              <SlidersHorizontal size={18} />
-            </button>
-          </div>
-        </div>
+      {/* SEARCH BAR - Mobile Only */}
+      <div className="md:hidden bg-white px-4 py-4">
+        <SearchBar 
+          isMobile
+          placeholder={
+            activeMode === 'food'
+              ? 'Search for food, restaurants...'
+              : 'Search for vegetables, groceries...'
+          }
+        />
       </div>
-
-      {/* SECONDARY NAV (Desktop Only) */}
-      <nav className="hidden md:block sticky top-32 z-30 bg-white border-b border-gray-100 shadow-sm">
-        <div className="max-w-6xl mx-auto px-6 flex justify-end gap-6 py-2">
-          <a href="#" className="text-gray-500 hover:text-gray-800 transition-colors text-sm">
-            Policy
-          </a>
-          <a href="#" className="text-gray-500 hover:text-gray-800 transition-colors text-sm">
-            FAQ's
-          </a>
-          <a href="#" className="text-gray-500 hover:text-gray-800 transition-colors text-sm">
-            Help & Support
-          </a>
-        </div>
-      </nav>
 
       {/* CONTENT AREA */}
       <main
@@ -721,6 +698,69 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
 
         {activeMode === 'groceries' && <div className="py-8">Groceries content goes here</div>}
       </main>
+
+      {/* FOOTER */}
+      <footer className="bg-gray-900 text-white py-12 md:py-16">
+        <div className="max-w-6xl mx-auto px-4 md:px-6">
+          {/* Footer Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+            {/* Company */}
+            <div>
+              <h3 className="font-bold text-lg mb-4">Haveit</h3>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">About Us</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Blog</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Careers</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Press</a></li>
+              </ul>
+            </div>
+
+            {/* For Users */}
+            <div>
+              <h3 className="font-bold text-lg mb-4">For Users</h3>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">FAQs</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Help Center</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Track Order</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Feedback</a></li>
+              </ul>
+            </div>
+
+            {/* Legal */}
+            <div>
+              <h3 className="font-bold text-lg mb-4">Legal</h3>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Terms & Conditions</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Cookie Policy</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Contact Us</a></li>
+              </ul>
+            </div>
+
+            {/* Social */}
+            <div>
+              <h3 className="font-bold text-lg mb-4">Follow Us</h3>
+              <div className="flex gap-4">
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2s9 5 20 5a9.5 9.5 0 00-9-5.5c4.75 2.25 7-1 7-4 0-.5 0-1 0-.5a3.5 3.5 0 005-3.12"/></svg>
+                </a>
+                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                  <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.441 15.892c-2.102 2.048-5.455 2.048-7.557 0-.338-.328-.028-.893.421-.566 2.089 1.622 5.459 1.622 7.548 0 .449-.327.759.238.421.566zm-1.04-2.867c-1.422.733-3.664.733-5.086 0-.39-.2-.779.159-.389.451 1.623.838 4.241.838 5.864 0 .39-.292 0-.651-.389-.451zm-.741-2.481c-.371-.371-.973-.371-1.344 0s-.371.973 0 1.344c.371.371.973.371 1.344 0s.371-.973 0-1.344zm-3.722 0c-.371-.371-.973-.371-1.344 0s-.371.973 0 1.344c.371.371.973.371 1.344 0s.371-.973 0-1.344z"/></svg>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Bottom */}
+          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
+            <p>&copy; 2026 Haveit. All rights reserved.</p>
+            <p>Made with ❤️ for food lovers</p>
+          </div>
+        </div>
+      </footer>
 
       {/* BOTTOM NAV (Mobile Only) */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex justify-around items-center h-20 z-40">
