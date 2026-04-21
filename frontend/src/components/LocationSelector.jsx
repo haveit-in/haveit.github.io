@@ -22,7 +22,7 @@ const TargetIcon = ({ size = 18 }) => (
   </svg>
 );
 
-export default function LocationSelector({ isMobile = false, isHeader = false }) {
+export default function LocationSelector({ isMobile = false, isHeader = false, accent = { border: 'border-gray-200', icon: 'text-gray-400' }, activeMode = 'food' }) {
   const { location, setLocation } = useApp();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -84,10 +84,37 @@ export default function LocationSelector({ isMobile = false, isHeader = false })
     }, 300);
   }, [fetchSuggestions]);
 
+  // Check browser permissions for geolocation
+  const checkLocationPermissions = useCallback(async () => {
+    if (!navigator.permissions) {
+      return null; // Permissions API not supported
+    }
+    
+    try {
+      const permission = await navigator.permissions.query({ name: 'geolocation' });
+      return permission.state;
+    } catch {
+      return null;
+    }
+  }, []);
+
   // Get current location using geolocation API
   const handleGetCurrentLocation = useCallback(async () => {
     if (!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser');
+      setError('Geolocation is not supported by your browser. Please search for your location manually.');
+      return;
+    }
+
+    // Check if running on HTTP (non-localhost)
+    if (window.location.protocol === 'http:' && !['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+      setError('Location access requires HTTPS in production. Please search for your location manually.');
+      return;
+    }
+
+    // Check permissions if available
+    const permissionState = await checkLocationPermissions();
+    if (permissionState === 'denied') {
+      setError('Location access denied. Please enable location in your browser settings or search manually.');
       return;
     }
 
@@ -118,18 +145,39 @@ export default function LocationSelector({ isMobile = false, isHeader = false })
           setQuery('');
           setSuggestions([]);
         } catch {
-          setError('Unable to get your location. Please try again.');
+          setError('Unable to get your location address. Please search for your location manually.');
         } finally {
           setGettingLocation(false);
         }
       },
-      () => {
+      (error) => {
         setGettingLocation(false);
-        setError('Unable to access your location. Please check your browser permissions.');
+        let errorMessage = 'Unable to access your location.';
+        
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = 'Location access denied. Please allow location access in your browser settings or search manually.';
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = 'Location information unavailable. This may be due to system location services being disabled. Please search for your location manually.';
+            break;
+          case error.TIMEOUT:
+            errorMessage = 'Location request timed out. Please try again or search manually.';
+            break;
+          default:
+            errorMessage = 'Unable to access your location. Please check your system location settings or search manually.';
+        }
+        
+        // Add specific guidance for macOS CoreLocation issues
+        if (error.message && error.message.includes('CoreLocation')) {
+          errorMessage = 'System location services unavailable. Please check your macOS Location Services settings or search manually.';
+        }
+        
+        setError(errorMessage);
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
     );
-  }, [setLocation]);
+  }, [setLocation, checkLocationPermissions]);
 
   // Handle location selection
   const handleSelectLocation = useCallback((locationData) => {
@@ -186,8 +234,8 @@ export default function LocationSelector({ isMobile = false, isHeader = false })
   const subText = location.areaName ? '' : 'Tap to choose';
 
   const desktopButtonClass = isHeader
-    ? 'inline-flex items-center gap-3 h-10 min-w-[160px] rounded-full border border-gray-200 bg-orange-50 px-4 shadow-sm text-sm font-medium text-gray-900 transition hover:shadow-md focus:outline-none focus:ring-0 focus:border-[#E8711A] max-w-[220px]'
-    : 'flex items-center gap-2 h-10 min-w-[160px] rounded-full border border-gray-200 bg-orange-50 px-3 text-sm font-medium text-gray-900 transition hover:shadow-md focus:outline-none focus:ring-0 focus:border-[#E8711A] max-w-[220px]';
+    ? `inline-flex items-center gap-3 h-10 min-w-[160px] rounded-full border ${accent.border} ${accent.bgLight} px-4 shadow-sm text-sm font-medium text-gray-900 transition hover:shadow-md focus:outline-none focus:ring-0 ${accent.locationFocus} max-w-[220px]`
+    : `flex items-center gap-2 h-10 min-w-[160px] rounded-full border ${accent.border} ${accent.bgLight} px-3 text-sm font-medium text-gray-900 transition hover:shadow-md focus:outline-none focus:ring-0 ${accent.locationFocus} max-w-[220px]`;
 
   if (isMobile) {
     return (
@@ -195,10 +243,10 @@ export default function LocationSelector({ isMobile = false, isHeader = false })
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-        className="group flex items-center gap-2 text-left w-full rounded-full border border-gray-200 bg-orange-50 px-3 py-2 focus:outline-none focus:ring-0 focus:border-[#E8711A]"
+        className={`group flex items-center gap-2 text-left w-full rounded-full border ${accent.border} ${accent.bgLight} px-3 py-2 focus:outline-none focus:ring-0 ${accent.locationFocus}`}
         aria-label="Select delivery location"
       >
-        <LocationIcon size={18} className="text-[#E8711A] flex-shrink-0" />
+        <LocationIcon size={18} className={`${accent.icon} flex-shrink-0`} />
         <div className="flex-1 min-w-0">
           <p className="text-xs text-gray-500">Location</p>
           <p className="text-sm font-medium text-gray-900 flex items-center gap-1">
@@ -224,7 +272,7 @@ export default function LocationSelector({ isMobile = false, isHeader = false })
                   value={query}
                   onChange={handleInputChange}
                   placeholder="Search"
-                  className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-[#E8711A] focus:border-transparent"
+                  className={`w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-${activeMode === 'food' ? 'orange-500' : 'green-600'} focus:border-transparent`}
                 />
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <LocationIcon size={16} className="text-gray-400" />
@@ -254,14 +302,15 @@ export default function LocationSelector({ isMobile = false, isHeader = false })
 
               {loading && (
                 <div className="mt-3 text-center text-sm text-gray-500 py-2">
-                  <span className="inline-block w-4 h-4 border-2 border-gray-300 border-t-[#E8711A] rounded-full animate-spin mr-2" />
+                  <span className="inline-block w-4 h-4 border-2 border-gray-300 border-t-[#16A34A] rounded-full animate-spin mr-2" />
                   Searching...
                 </div>
               )}
 
               {error && (
                 <div className="mt-3 px-3 py-2 bg-red-50 text-red-600 text-sm rounded-lg">
-                  {error}
+                  <p>{error}</p>
+                  <p className="text-xs mt-1 text-red-500">Tip: You can type your area name or city above to search manually.</p>
                 </div>
               )}
 
@@ -306,7 +355,7 @@ export default function LocationSelector({ isMobile = false, isHeader = false })
         className={`${desktopButtonClass} group`}
         aria-label="Select delivery location"
       >
-        <LocationIcon size={18} className="text-[#E8711A] flex-shrink-0" />
+        <LocationIcon size={18} className={`${accent.icon} flex-shrink-0`} />
         <div className="text-left min-w-0">
           <p className="text-sm font-medium text-gray-900 truncate max-w-[170px]">
             <span className="relative block truncate max-w-full">
@@ -337,7 +386,7 @@ export default function LocationSelector({ isMobile = false, isHeader = false })
                 value={query}
                 onChange={handleInputChange}
                 placeholder="Search for area, street..."
-                className="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#E8711A] focus:border-transparent"
+                className={`w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-${activeMode === 'food' ? 'orange-500' : 'green-600'} focus:border-transparent`}
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <LocationIcon size={16} className="text-gray-400" />
@@ -374,7 +423,8 @@ export default function LocationSelector({ isMobile = false, isHeader = false })
 
             {error && (
               <div className="mt-3 px-3 py-2 bg-red-50 text-red-600 text-sm rounded-lg">
-                {error}
+                <p>{error}</p>
+                <p className="text-xs mt-1 text-red-500">Tip: You can type your area name or city above to search manually.</p>
               </div>
             )}
 

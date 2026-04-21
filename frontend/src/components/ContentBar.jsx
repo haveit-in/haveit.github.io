@@ -97,13 +97,13 @@ const ContentBar = () => {
                 <MagnetWrapper key={item.id}>
                   <button
                     type="button"
-                    className="px-4 py-2 text-sm font-medium text-gray-700 rounded-full transition-all duration-200 hover:text-orange-500 hover:font-bold whitespace-nowrap backdrop-blur-md"
+                    className="px-4 py-2 text-sm font-medium text-gray-700 rounded-full transition-all duration-200 hover:text-green-500 hover:font-bold whitespace-nowrap backdrop-blur-md"
                     onMouseEnter={() => setHoveredLeftDesktop(item.id)}
                     onMouseLeave={() => setHoveredLeftDesktop(null)}
                     style={{
                       background: 'rgba(255, 255, 255, 0.25)',
-                      border: hoveredLeftDesktop === item.id ? '2px solid rgba(255, 140, 0, 0.8)' : '2px solid rgba(180, 180, 180, 0.4)',
-                      boxShadow: hoveredLeftDesktop === item.id ? '0 4px 15px rgba(0, 0, 0, 0.04), 0 0 20px rgba(255, 140, 0, 0.6)' : '0 4px 15px rgba(0, 0, 0, 0.04)',
+                      border: hoveredLeftDesktop === item.id ? '2px solid rgba(34, 197, 94, 0.8)' : '2px solid rgba(180, 180, 180, 0.4)',
+                      boxShadow: hoveredLeftDesktop === item.id ? '0 4px 15px rgba(0, 0, 0, 0.04), 0 0 20px rgba(34, 197, 94, 0.6)' : '0 4px 15px rgba(0, 0, 0, 0.04)',
                     }}
                   >
                     {item.label}
@@ -121,13 +121,13 @@ const ContentBar = () => {
                 <MagnetWrapper key={item.id}>
                   <button
                     type="button"
-                    className="px-4 py-2 text-sm font-medium text-gray-700 rounded-full transition-all duration-200 hover:text-orange-500 hover:font-bold whitespace-nowrap backdrop-blur-md"
+                    className="px-4 py-2 text-sm font-medium text-gray-700 rounded-full transition-all duration-200 hover:text-green-500 hover:font-bold whitespace-nowrap backdrop-blur-md"
                     onMouseEnter={() => setHoveredRightDesktop(item.id)}
                     onMouseLeave={() => setHoveredRightDesktop(null)}
                     style={{
                       background: 'rgba(255, 255, 255, 0.25)',
-                      border: hoveredRightDesktop === item.id ? '2px solid rgba(255, 140, 0, 0.8)' : '2px solid rgba(180, 180, 180, 0.4)',
-                      boxShadow: hoveredRightDesktop === item.id ? '0 4px 15px rgba(0, 0, 0, 0.04), 0 0 20px rgba(255, 140, 0, 0.6)' : '0 4px 15px rgba(0, 0, 0, 0.04)',
+                      border: hoveredRightDesktop === item.id ? '2px solid rgba(34, 197, 94, 0.8)' : '2px solid rgba(180, 180, 180, 0.4)',
+                      boxShadow: hoveredRightDesktop === item.id ? '0 4px 15px rgba(0, 0, 0, 0.04), 0 0 20px rgba(34, 197, 94, 0.6)' : '0 4px 15px rgba(0, 0, 0, 0.04)',
                     }}
                   >
                     {item.label}
@@ -163,8 +163,8 @@ const ContentBar = () => {
                   className="flex items-center justify-between px-3 py-2 rounded-full transition-all duration-200 text-gray-700 font-semibold text-sm backdrop-blur-md whitespace-nowrap"
                   style={{
                     background: 'rgba(255, 255, 255, 0.25)',
-                    border: hoverLeftTrigger ? '2px solid rgba(255, 140, 0, 0.8)' : '2px solid rgba(180, 180, 180, 0.4)',
-                    boxShadow: hoverLeftTrigger ? '0 0 20px rgba(255, 140, 0, 0.6)' : '0 0 10px rgba(0, 0, 0, 0.02)',
+                    border: hoverLeftTrigger ? '2px solid rgba(34, 197, 94, 0.8)' : '2px solid rgba(180, 180, 180, 0.4)',
+                    boxShadow: hoverLeftTrigger ? '0 0 20px rgba(34, 197, 94, 0.6)' : '0 0 10px rgba(0, 0, 0, 0.02)',
                   }}
                 >
                   <span>Menu</span>
@@ -192,11 +192,11 @@ const ContentBar = () => {
                           onClick={() => setLeftOpen(false)}
                           onMouseEnter={() => setHoveredLeftMobile(item.id)}
                           onMouseLeave={() => setHoveredLeftMobile(null)}
-                          className="px-4 py-2 text-xs font-medium text-gray-700 rounded-full transition-all duration-200 hover:text-orange-500 hover:font-bold whitespace-nowrap backdrop-blur-md"
+                          className="px-4 py-2 text-xs font-medium text-gray-700 rounded-full transition-all duration-200 hover:text-green-500 hover:font-bold whitespace-nowrap backdrop-blur-md"
                           style={{
                             background: 'rgba(255, 255, 255, 0.25)',
-                            border: hoveredLeftMobile === item.id ? '2px solid rgba(255, 140, 0, 0.8)' : '2px solid rgba(180, 180, 180, 0.4)',
-                            boxShadow: hoveredLeftMobile === item.id ? '0 0 15px rgba(255, 140, 0, 0.6)' : '0 0 8px rgba(0, 0, 0, 0.02)',
+                            border: hoveredLeftMobile === item.id ? '2px solid rgba(34, 197, 94, 0.8)' : '2px solid rgba(180, 180, 180, 0.4)',
+                            boxShadow: hoveredLeftMobile === item.id ? '0 0 15px rgba(34, 197, 94, 0.6)' : '0 0 8px rgba(0, 0, 0, 0.02)',
                           }}
                         >
                           {item.label}
@@ -222,8 +222,8 @@ const ContentBar = () => {
                   className="flex items-center justify-between px-3 py-2 rounded-full transition-all duration-200 text-gray-700 font-semibold text-sm backdrop-blur-md whitespace-nowrap"
                   style={{
                     background: 'rgba(255, 255, 255, 0.25)',
-                    border: hoverRightTrigger ? '2px solid rgba(255, 140, 0, 0.8)' : '2px solid rgba(180, 180, 180, 0.4)',
-                    boxShadow: hoverRightTrigger ? '0 0 20px rgba(255, 140, 0, 0.6)' : '0 0 10px rgba(0, 0, 0, 0.02)',
+                    border: hoverRightTrigger ? '2px solid rgba(34, 197, 94, 0.8)' : '2px solid rgba(180, 180, 180, 0.4)',
+                    boxShadow: hoverRightTrigger ? '0 0 20px rgba(34, 197, 94, 0.6)' : '0 0 10px rgba(0, 0, 0, 0.02)',
                   }}
                 >
                   <span>Support</span>
@@ -251,11 +251,11 @@ const ContentBar = () => {
                           onClick={() => setRightOpen(false)}
                           onMouseEnter={() => setHoveredRightMobile(item.id)}
                           onMouseLeave={() => setHoveredRightMobile(null)}
-                          className="px-4 py-2 text-xs font-medium text-gray-700 rounded-full transition-all duration-200 hover:text-orange-500 hover:font-bold whitespace-nowrap backdrop-blur-md"
+                          className="px-4 py-2 text-xs font-medium text-gray-700 rounded-full transition-all duration-200 hover:text-green-500 hover:font-bold whitespace-nowrap backdrop-blur-md"
                           style={{
                             background: 'rgba(255, 255, 255, 0.25)',
-                            border: hoveredRightMobile === item.id ? '2px solid rgba(255, 140, 0, 0.8)' : '2px solid rgba(180, 180, 180, 0.4)',
-                            boxShadow: hoveredRightMobile === item.id ? '0 0 15px rgba(255, 140, 0, 0.6)' : '0 0 8px rgba(0, 0, 0, 0.02)',
+                            border: hoveredRightMobile === item.id ? '2px solid rgba(34, 197, 94, 0.8)' : '2px solid rgba(180, 180, 180, 0.4)',
+                            boxShadow: hoveredRightMobile === item.id ? '0 0 15px rgba(34, 197, 94, 0.6)' : '0 0 8px rgba(0, 0, 0, 0.02)',
                           }}
                         >
                           {item.label}

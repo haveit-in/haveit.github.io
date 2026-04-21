@@ -105,7 +105,7 @@ function HighlightedText({ text, query }) {
       parts.push(<span key={`before-${start}`}>{text.slice(lastIndex, start)}</span>);
     }
     parts.push(
-      <mark key={`highlight-${start}`} className="bg-[#E8711A]/20 text-[#E8711A] font-semibold rounded px-0.5">
+      <mark key={`highlight-${start}`} className="bg-[#16A34A]/20 text-[#16A34A] font-semibold rounded px-0.5">
         {text.slice(start, end + 1)}
       </mark>
     );
@@ -122,7 +122,8 @@ function HighlightedText({ text, query }) {
 export default function SearchBar({ 
   placeholder = "Search",
   isMobile = false,
-  onSearch 
+  onSearch,
+  accent = { border: 'border-gray-200', bg: 'bg-gray-500' }
 }) {
   const { setSearchQuery } = useApp();
   const [query, setQuery] = useState('');
@@ -267,7 +268,7 @@ export default function SearchBar({
   // Get category color
   const getCategoryColor = (category) => {
     switch (category) {
-      case 'Food': return 'bg-orange-100 text-orange-700';
+      case 'Food': return 'bg-green-100 text-green-700';
       case 'Groceries': return 'bg-green-100 text-green-700';
       case 'Beverages': return 'bg-blue-100 text-blue-700';
       case 'Fresh': return 'bg-emerald-100 text-emerald-700';
@@ -276,8 +277,8 @@ export default function SearchBar({
   };
 
   const inputClasses = isMobile
-    ? "block w-full h-10 pl-10 pr-4 border border-gray-200 rounded-full bg-orange-50 text-sm font-medium text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E8711A]/30 focus:border-[#E8711A]"
-    : "block w-full h-10 pl-11 pr-4 border border-gray-200 rounded-full bg-orange-50 text-sm font-medium text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#E8711A]/30 focus:border-[#E8711A]";
+    ? `block w-full h-10 pl-10 pr-4 border ${accent.border} rounded-full ${accent.bgLight} text-sm font-medium text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 ${accent.focus}`
+    : `block w-full h-10 pl-11 pr-4 border ${accent.border} rounded-full ${accent.bgLight} text-sm font-medium text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 ${accent.focus}`;
 
   return (
     <div className={`relative h-10 ${isMobile ? 'w-full' : 'max-w-[220px]'}`} ref={dropdownRef}>
@@ -300,7 +301,7 @@ export default function SearchBar({
       </div>
 
       {isOpen && (
-        <div className={`absolute top-full left-0 right-0 mt-2 bg-orange-50 rounded-xl shadow-lg border border-gray-200 z-50 overflow-hidden ${isMobile ? 'max-h-[60vh]' : 'max-h-96'}`}>
+        <div className={`absolute top-full left-0 right-0 mt-2 ${accent.bgLight} rounded-xl shadow-lg border border-gray-200 z-50 overflow-hidden ${isMobile ? 'max-h-[60vh]' : 'max-h-96'}`}>
           {results.length > 0 ? (
             <div className="overflow-y-auto max-h-[inherit]">
               {Object.entries(groupedResults).map(([category, categoryResults]) => (

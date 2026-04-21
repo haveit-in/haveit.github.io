@@ -79,6 +79,15 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
   const [foodCategory, setFoodCategory] = useState('Burgers')
   const [foodLikes, setFoodLikes] = useState({})
   const [foodCart, setFoodCart] = useState({})
+  const [grocerySlide, setGrocerySlide] = useState(0)
+  const [groceryCategory, setGroceryCategory] = useState('Vegetables')
+  const [groceryCart, setGroceryCart] = useState({})
+  const [groceryLikes, setGroceryLikes] = useState({})
+
+  // Accent colors based on active mode
+  const accent = activeMode === 'food'
+    ? { border: 'border-orange-300', icon: 'text-orange-500', bg: 'bg-orange-500', bgLight: 'bg-orange-50', focus: 'focus:ring-orange-500/30 focus:border-orange-500', locationFocus: 'focus:border-orange-500' }
+    : { border: 'border-green-300', icon: 'text-green-600', bg: 'bg-green-600', bgLight: 'bg-green-50', focus: 'focus:ring-green-600/30 focus:border-green-600', locationFocus: 'focus:border-green-600' }
 
   useEffect(() => {
     const current = searchPhrases[phraseIndex]
@@ -119,6 +128,14 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
     return () => clearInterval(interval)
   }, [activeMode])
 
+  useEffect(() => {
+    if (activeMode !== 'groceries') return
+    const interval = setInterval(() => {
+      setGrocerySlide((prev) => (prev + 1) % 3)
+    }, 3500)
+    return () => clearInterval(interval)
+  }, [activeMode])
+
   return (
     <div className="min-h-screen bg-white">
       {/* PROMO BANNER */}
@@ -147,17 +164,17 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
       )}
 
       {/* DESKTOP HEADER (Existing) */}
-      <header className="hidden md:block sticky top-0 z-50 bg-orange-50 border-b border-gray-100 backdrop-blur-sm">
+      <header className={`hidden md:block sticky top-0 z-50 ${accent.bgLight} border-b border-gray-100 backdrop-blur-sm`}>
         <div className="max-w-7xl mx-auto px-8">
           <div className="relative">
             <div className="relative z-10 flex items-center justify-between h-20 gap-4">
               <div className="flex items-center gap-4 flex-shrink-0">
-                <LocationSelector isHeader />
+                <LocationSelector isHeader accent={accent} activeMode={activeMode} />
               </div>
 
               <div className="absolute left-1/2 -translate-x-1/2 top-0 flex items-center h-20">
                 <MagnetWrapper>
-                  <span className="text-2xl font-bold text-orange-500">
+                  <span className={`text-2xl font-bold ${accent.icon}`}>
                     Haveit
                   </span>
                 </MagnetWrapper>
@@ -168,7 +185,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                   <button
                     type="button"
                     onClick={() => setIsFavoritesModalOpen(true)}
-                    className="h-10 w-10 rounded-full border border-gray-200 bg-orange-50 hover:bg-orange-100 transition-colors flex items-center justify-center text-gray-700"
+                    className={`h-10 w-10 rounded-full border ${accent.border} ${accent.bgLight} hover:bg-opacity-80 transition-colors flex items-center justify-center ${accent.icon}`}
                     aria-label="Favorites"
                   >
                     <HeartIcon size={20} />
@@ -178,7 +195,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                   <button
                     type="button"
                     onClick={() => setIsCartModalOpen(true)}
-                    className="h-10 w-10 rounded-full border border-gray-200 bg-orange-50 hover:bg-orange-100 transition-colors flex items-center justify-center text-gray-700"
+                    className={`h-10 w-10 rounded-full border ${accent.border} ${accent.bgLight} hover:bg-opacity-80 transition-colors flex items-center justify-center ${accent.icon}`}
                     aria-label="Cart"
                   >
                     <CartIcon size={20} />
@@ -188,7 +205,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                   <button
                     type="button"
                     onClick={onOpenLogin}
-                    className="h-10 px-4 rounded-full text-sm font-medium text-gray-700 border border-gray-200 bg-orange-50 hover:bg-orange-100 transition-colors"
+                    className={`h-10 px-4 rounded-full text-sm font-medium ${accent.icon} border ${accent.border} ${accent.bgLight} hover:bg-opacity-80 transition-colors`}
                   >
                     Login
                   </button>
@@ -203,17 +220,17 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
       <header className="md:hidden sticky top-0 z-50 bg-white border-b border-gray-100 backdrop-blur-sm">
         <div className="flex items-center justify-between px-4 h-16 gap-2">
           {/* Location Selector Left */}
-          <LocationSelector isMobile />
+          <LocationSelector isMobile accent={accent} activeMode={activeMode} />
           
           {/* Logo Center */}
-          <span className="text-xl font-bold text-orange-500">Haveit</span>
+          <span className={`text-xl font-bold ${accent.icon}`}>Haveit</span>
           
           {/* Icons Right */}
           <div className="flex items-center gap-2">
             {/* Notification */}
             <button
               type="button"
-              className="p-2 text-gray-700 hover:opacity-70 transition-opacity relative"
+              className={`p-2 ${accent.icon} hover:opacity-70 transition-opacity relative`}
               aria-label="Notifications"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -230,18 +247,18 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                 setIsFavoritesModalOpen(false)
                 setIsCartModalOpen(true)
               }}
-              className="p-2 text-gray-700 hover:opacity-70 transition-opacity relative"
+              className={`p-2 ${accent.icon} hover:opacity-70 transition-opacity relative`}
               aria-label="Cart"
             >
-              <CartIcon size={24} />
-              <span className="absolute top-0 right-0 w-5 h-5 bg-orange-500 text-white text-xs font-bold flex items-center justify-center rounded-full">2</span>
+              <CartIcon size={24} className={accent.icon} />
+              <span className={`absolute top-0 right-0 w-5 h-5 ${accent.bg} text-white text-xs font-bold flex items-center justify-center rounded-full`}>2</span>
             </button>
             
             {/* User Profile */}
             <button
               type="button"
               onClick={onOpenLogin}
-              className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center hover:bg-orange-600 transition-colors"
+              className={`w-8 h-8 ${accent.bg} text-white rounded-full flex items-center justify-center hover:bg-opacity-90 transition-colors`}
               aria-label="Profile"
             >
               <UserIcon size={20} />
@@ -249,12 +266,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
           </div>
         </div>
 
-        {/* Mobile Location & Search */}
-        <div className="px-4 pb-3 space-y-3 bg-white">
-          {/* Search */}
-          <SearchBar isMobile placeholder={placeholder} />
-        </div>
-      </header>
+              </header>
 
       {/* MODE TOGGLE */}
       <div className="bg-white sticky top-14 md:top-20 z-40 border-b border-gray-100 md:border-b-0">
@@ -267,7 +279,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                 onClick={() => setActiveMode('food')}
                 className={`flex-1 md:flex-auto px-6 py-3 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 ${
                   activeMode === 'food'
-                    ? 'bg-orange-500 text-white'
+                    ? `${accent.bg} text-white`
                     : 'text-gray-500 bg-transparent'
                 }`}
               >
@@ -296,6 +308,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                     ? 'Search for food, restaurants...'
                     : 'Search for vegetables, groceries...'
                 }
+                accent={accent}
               />
             </div>
           </div>
@@ -311,6 +324,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
               ? 'Search for food, restaurants...'
               : 'Search for vegetables, groceries...'
           }
+          accent={accent}
         />
       </div>
 
@@ -696,7 +710,411 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
           </div>
         )}
 
-        {activeMode === 'groceries' && <div className="py-8">Groceries content goes here</div>}
+        {activeMode === 'groceries' && (
+          <div className="space-y-6 py-4 md:max-w-6xl md:mx-auto md:px-6">
+            {/* 1. HERO CAROUSEL */}
+            <div className="px-4 md:px-0">
+              <div className="rounded-2xl overflow-hidden relative h-48 md:h-80 bg-gray-200">
+                {/* Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-r from-green-600/90 to-green-400/40 z-10" />
+
+                {/* Slide Content */}
+                <div className="absolute inset-0 z-20 flex flex-col justify-center pl-4 md:pl-8">
+                  {grocerySlide === 0 && (
+                    <>
+                      <div className="bg-white/20 text-white text-xs rounded-full px-3 py-1 w-fit mb-2">
+                        🍎 Seasonal Fruits
+                      </div>
+                      <h2 className="text-white font-black text-2xl md:text-4xl mb-1">30% OFF Fruits</h2>
+                      <p className="text-white/90 text-sm mb-2">Handpicked, organic & 100% fresh</p>
+                      <div className="bg-white/20 text-white text-xs font-bold rounded px-2 py-0.5 w-fit mb-3">
+                        FRUIT30
+                      </div>
+                      <button className="bg-white text-green-600 font-bold rounded-full px-5 py-2 w-fit text-sm">
+                        Buy Now →
+                      </button>
+                    </>
+                  )}
+                  {grocerySlide === 1 && (
+                    <>
+                      <div className="bg-white/20 text-white text-xs rounded-full px-3 py-1 w-fit mb-2">
+                        🥦 Fresh Veggies
+                      </div>
+                      <h2 className="text-white font-black text-2xl md:text-4xl mb-1">Flat ₹50 OFF</h2>
+                      <p className="text-white/90 text-sm mb-2">on your first grocery order</p>
+                      <div className="bg-white/20 text-white text-xs font-bold rounded px-2 py-0.5 w-fit mb-3">
+                        FRESH50
+                      </div>
+                      <button className="bg-white text-green-600 font-bold rounded-full px-5 py-2 w-fit text-sm">
+                        Shop Now →
+                      </button>
+                    </>
+                  )}
+                  {grocerySlide === 2 && (
+                    <>
+                      <div className="bg-white/20 text-white text-xs rounded-full px-3 py-1 w-fit mb-2">
+                        🧃 Daily Essentials
+                      </div>
+                      <h2 className="text-white font-black text-2xl md:text-4xl mb-1">Free Delivery</h2>
+                      <p className="text-white/90 text-sm mb-2">on grocery orders above ₹299</p>
+                      <div className="bg-white/20 text-white text-xs font-bold rounded px-2 py-0.5 w-fit mb-3">
+                        GROC299
+                      </div>
+                      <button className="bg-white text-green-600 font-bold rounded-full px-5 py-2 w-fit text-sm">
+                        Order Now →
+                      </button>
+                    </>
+                  )}
+                </div>
+
+                {/* Navigation Arrows */}
+                <button
+                  onClick={() => setGrocerySlide((prev) => (prev - 1 + 3) % 3)}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-30 bg-white/20 hover:bg-white/40 text-white rounded-full p-1 transition-colors"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="m15 18-6-6 6-6" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setGrocerySlide((prev) => (prev + 1) % 3)}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-30 bg-white/20 hover:bg-white/40 text-white rounded-full p-1 transition-colors"
+                >
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <path d="m9 18 6-6-6-6" />
+                  </svg>
+                </button>
+
+                {/* Dot Pagination */}
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-30 flex gap-1">
+                  {[0, 1, 2].map((i) => (
+                    <button
+                      key={i}
+                      onClick={() => setGrocerySlide(i)}
+                      className={`rounded-full transition-all ${
+                        i === grocerySlide
+                          ? 'bg-green-600 w-5 h-1.5'
+                          : 'bg-white/40 w-1.5 h-1.5'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* 2. FEATURE PILLS */}
+            <div className="md:px-0">
+              <div className="flex flex-nowrap overflow-x-auto md:overflow-visible md:flex md:justify-center gap-3 md:gap-4 scrollbar-hide pb-2 md:pb-0 px-2 md:px-0">
+                <div className="flex flex-row items-center gap-3 bg-orange-50 rounded-2xl shadow-sm px-4 py-3 flex-shrink-0 border border-gray-200">
+                  <div className="text-xl whitespace-nowrap flex-shrink-0">⚡</div>
+                  <div className="flex flex-col">
+                    <p className="text-sm font-bold text-gray-900">20 Min Delivery</p>
+                    <p className="text-xs text-gray-400">Ultra-fast grocery</p>
+                  </div>
+                </div>
+                <div className="flex flex-row items-center gap-3 bg-orange-50 rounded-2xl shadow-sm px-4 py-3 flex-shrink-0 border border-gray-200">
+                  <div className="text-xl whitespace-nowrap flex-shrink-0">🌿</div>
+                  <div className="flex flex-col">
+                    <p className="text-sm font-bold text-gray-900">100% Fresh</p>
+                    <p className="text-xs text-gray-400">Farm to doorstep</p>
+                  </div>
+                </div>
+                <div className="flex flex-row items-center gap-3 bg-orange-50 rounded-2xl shadow-sm px-4 py-3 flex-shrink-0 border border-gray-200">
+                  <div className="text-xl whitespace-nowrap flex-shrink-0">💰</div>
+                  <div className="flex flex-col">
+                    <p className="text-sm font-bold text-gray-900">Best Price</p>
+                    <p className="text-xs text-gray-400">No hidden charges</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 3. SHOP BY CATEGORY */}
+            <div className="md:px-0">
+              <div className="flex items-center justify-between mb-4 px-4 md:px-0">
+                <h2 className="font-bold text-lg">Shop by Category</h2>
+                <a href="#" className="text-green-600 text-sm font-medium hover:underline">
+                  See All
+                </a>
+              </div>
+              <div className="flex flex-nowrap overflow-x-auto md:overflow-visible md:flex md:justify-center md:gap-6 gap-2 scrollbar-hide pb-2 md:pb-0 px-2 md:px-0">
+                {[
+                  { name: 'Vegetables', emoji: '🥦' },
+                  { name: 'Fruits', emoji: '🍎' },
+                  { name: 'Dairy', emoji: '🥛' },
+                  { name: 'Bakery', emoji: '🍞' },
+                  { name: 'Snacks', emoji: '🍿' },
+                  { name: 'Beverages', emoji: '🧃' },
+                ].map((category, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setGroceryCategory(category.name)}
+                    className="flex flex-col items-center gap-1 cursor-pointer flex-shrink-0"
+                  >
+                    <div
+                      className={`w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center text-2xl md:text-3xl transition-colors ${
+                        groceryCategory === category.name
+                          ? 'bg-green-600'
+                          : 'bg-gray-100'
+                      }`}
+                    >
+                      {category.emoji}
+                    </div>
+                    <span
+                      className={`text-xs md:text-sm transition-colors ${
+                        groceryCategory === category.name
+                          ? 'text-green-600 font-semibold'
+                          : 'text-gray-500'
+                      }`}
+                    >
+                      {category.name}
+                    </span>
+                  </button>
+                ))}
+              </div>
+              <div className="flex justify-center mt-4">
+                <button className="border border-green-200 text-green-600 rounded-full px-4 md:px-6 py-2 text-xs md:text-sm font-medium hover:bg-green-50 transition-colors">
+                  🛒 Shop fresh & save
+                </button>
+              </div>
+            </div>
+
+            {/* 4. QUICK ADD ESSENTIALS */}
+            <div className="md:px-0">
+              <div className="flex items-center justify-between mb-4 px-4 md:px-0">
+                <h2 className="font-bold text-lg">⚡ Quick Add Essentials</h2>
+                <a href="#" className="text-green-600 text-sm font-medium hover:underline">
+                  See All
+                </a>
+              </div>
+              <div className="flex flex-nowrap overflow-x-auto md:overflow-visible md:grid md:grid-cols-5 gap-3 md:gap-4 scrollbar-hide pb-2 md:pb-0 px-2 md:px-0">
+                {[
+                  { name: 'Potato', emoji: '🥔', weight: '1kg', price: '29' },
+                  { name: 'Tomato', emoji: '🍅', weight: '500g', price: '24' },
+                  { name: 'Onion', emoji: '🧅', weight: '1kg', price: '32' },
+                  { name: 'Garlic', emoji: '🧄', weight: '250g', price: '38' },
+                  { name: 'Ginger', emoji: '🫚', weight: '200g', price: '25' },
+                ].map((item, idx) => {
+                  const itemId = `essential-${item.name}-${idx}`
+                  const inCart = groceryCart[itemId] || 0
+                  return (
+                    <div
+                      key={idx}
+                      className="w-36 md:w-auto rounded-2xl border border-gray-100 bg-white p-3 flex flex-col items-center gap-1 flex-shrink-0"
+                    >
+                      <div className="text-4xl">{item.emoji}</div>
+                      <p className="font-bold text-sm text-center">{item.name}</p>
+                      <p className="text-gray-400 text-xs">{item.weight}</p>
+                      <p className="text-green-600 font-bold text-base">₹{item.price}</p>
+                      {inCart === 0 ? (
+                        <button
+                          onClick={() => {
+                            setGroceryCart((prev) => ({
+                              ...prev,
+                              [itemId]: 1,
+                            }))
+                          }}
+                          className="w-full border border-green-500 text-green-600 rounded-full py-1 text-sm font-medium hover:bg-green-50 transition-colors"
+                        >
+                          + Add
+                        </button>
+                      ) : (
+                        <div className="flex items-center gap-1 bg-green-600 text-white rounded-full px-2 py-1 text-sm w-full justify-center">
+                          <button
+                            onClick={() => {
+                              setGroceryCart((prev) => ({
+                                ...prev,
+                                [itemId]: Math.max(0, prev[itemId] - 1),
+                              }))
+                            }}
+                            className="hover:opacity-80"
+                          >
+                            −
+                          </button>
+                          <span className="w-4 text-center text-xs">{inCart}</span>
+                          <button
+                            onClick={() => {
+                              setGroceryCart((prev) => ({
+                                ...prev,
+                                [itemId]: prev[itemId] + 1,
+                              }))
+                            }}
+                            className="hover:opacity-80"
+                          >
+                            +
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* 5. FRESH PICKS FOR YOU */}
+            <div className="md:px-0">
+              <div className="flex items-center justify-between mb-4 px-4 md:px-0">
+                <h2 className="font-bold text-lg">🌿 Fresh Picks for You</h2>
+                <a href="#" className="text-green-600 text-sm font-medium hover:underline">
+                  View All
+                </a>
+              </div>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 px-4 md:px-0">
+                {[
+                  {
+                    name: 'Organic Spinach',
+                    weight: '500g',
+                    star: '4.8',
+                    price: '45',
+                    original: '65',
+                    badge: { label: 'Organic', color: 'bg-green-600' },
+                  },
+                  {
+                    name: 'Mixed Fruits Pack',
+                    weight: '1kg',
+                    star: '4.7',
+                    price: '129',
+                    original: '180',
+                    badge: { label: 'Fresh', color: 'bg-green-500' },
+                  },
+                  {
+                    name: 'Full Cream Milk',
+                    weight: '1L',
+                    star: '4.9',
+                    price: '68',
+                    original: '75',
+                    badge: { label: 'Daily', color: 'bg-blue-500' },
+                  },
+                  {
+                    name: 'Multigrain Bread',
+                    weight: '400g',
+                    star: '4.5',
+                    price: '55',
+                    original: '70',
+                    badge: { label: 'Healthy', color: 'bg-green-500' },
+                  },
+                ].map((item, idx) => {
+                  const itemId = `fresh-${item.name}-${idx}`
+                  const inCart = groceryCart[itemId] || 0
+                  return (
+                    <div key={idx} className="rounded-2xl bg-white shadow-sm overflow-hidden">
+                      {/* Image Area */}
+                      <div className="h-36 bg-gray-200 relative w-full">
+                        <div className={`absolute top-2 left-2 text-white text-xs font-bold rounded-full px-2 py-0.5 ${item.badge.color}`}>
+                          {item.badge.label}
+                        </div>
+                        <button
+                          onClick={() => {
+                            setGroceryLikes((prev) => ({
+                              ...prev,
+                              [itemId]: !prev[itemId],
+                            }))
+                          }}
+                          className="absolute top-2 right-2 bg-white/80 hover:bg-white rounded-full p-1 transition-colors"
+                        >
+                          {groceryLikes[itemId] ? (
+                            <Heart size={16} className="fill-red-500 text-red-500" />
+                          ) : (
+                            <Heart size={16} className="text-gray-600" />
+                          )}
+                        </button>
+                      </div>
+
+                      {/* Body */}
+                      <div className="p-3">
+                        <p className="font-bold text-sm mb-1">{item.name}</p>
+                        <p className="text-gray-400 text-xs mb-1">{item.weight}</p>
+                        <div className="flex items-center gap-1 mb-2 text-xs">
+                          <span className="text-yellow-500">⭐{item.star}</span>
+                        </div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-green-600 font-bold text-sm">₹{item.price}</span>
+                          <span className="text-gray-400 line-through text-xs">₹{item.original}</span>
+                        </div>
+                        {inCart === 0 ? (
+                          <button
+                            onClick={() => {
+                              setGroceryCart((prev) => ({
+                                ...prev,
+                                [itemId]: 1,
+                              }))
+                            }}
+                            className="w-full bg-green-600 text-white rounded-full py-1 text-sm font-medium hover:bg-green-700 transition-colors"
+                          >
+                            + Add
+                          </button>
+                        ) : (
+                          <div className="flex items-center gap-1 bg-green-600 text-white rounded-full px-2 py-1 text-sm w-full justify-center">
+                            <button
+                              onClick={() => {
+                                setGroceryCart((prev) => ({
+                                  ...prev,
+                                  [itemId]: Math.max(0, prev[itemId] - 1),
+                                }))
+                              }}
+                              className="hover:opacity-80"
+                            >
+                              −
+                            </button>
+                            <span className="w-4 text-center text-xs">{inCart}</span>
+                            <button
+                              onClick={() => {
+                                setGroceryCart((prev) => ({
+                                  ...prev,
+                                  [itemId]: prev[itemId] + 1,
+                                }))
+                              }}
+                              className="hover:opacity-80"
+                            >
+                              +
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* 6. WEEKLY BASKET CARD */}
+            <div className="px-4 md:px-0">
+              <div className="bg-green-600 rounded-2xl p-5 relative overflow-hidden">
+                {/* Dot Pattern */}
+                <div
+                  className="absolute inset-0 opacity-10"
+                  style={{
+                    backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
+                    backgroundSize: '20px 20px',
+                  }}
+                />
+                <div className="relative z-10">
+                  <h3 className="font-bold text-white text-xl mb-1">🛒 Build your weekly basket!</h3>
+                  <p className="text-white/80 text-sm mb-3">Save up to 25% on bundles • 1000+ items available</p>
+                  <button className="border-2 border-white text-white rounded-full px-5 py-2 text-sm font-semibold hover:bg-white/10 transition-colors">
+                    Start Shopping →
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 7. REFER & EARN CARD */}
+            <div className="px-4 md:px-0">
+              <div className="bg-purple-600 rounded-2xl p-4 md:p-5 flex items-center justify-between gap-3 md:gap-4">
+                <div className="flex items-center gap-3 md:gap-4">
+                  <div className="text-3xl md:text-4xl flex-shrink-0">🎉</div>
+                  <div>
+                    <h3 className="font-bold text-white text-sm md:text-base">Refer & Earn ₹100!</h3>
+                    <p className="text-white/80 text-xs md:text-sm">Invite friends and get ₹100 for each referral</p>
+                  </div>
+                </div>
+                <button className="bg-white text-purple-600 font-bold rounded-full px-3 md:px-5 py-1.5 md:py-2 flex-shrink-0 hover:bg-gray-100 transition-colors text-xs md:text-sm">
+                  Invite
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
       {/* FOOTER */}
@@ -768,54 +1186,66 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
           type="button"
           onClick={() => setActiveTab('home')}
           className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-            activeTab === 'home' ? 'text-orange-500' : 'text-gray-500'
+            activeTab === 'home' && activeMode === 'food' ? 'text-orange-500' : activeTab === 'home' ? 'text-green-500' : 'text-gray-500'
           }`}
         >
           <House size={24} />
-          {activeTab === 'home' && <div className="w-1 h-1 bg-orange-500 rounded-full mt-1" />}
+          {activeTab === 'home' && <div className={`w-1 h-1 rounded-full mt-1 ${
+            activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
+          }`} />}
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('search')}
           className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-            activeTab === 'search' ? 'text-orange-500' : 'text-gray-500'
+            activeTab === 'search' && activeMode === 'food' ? 'text-orange-500' : activeTab === 'search' ? 'text-green-500' : 'text-gray-500'
           }`}
         >
           <Search size={24} />
-          {activeTab === 'search' && <div className="w-1 h-1 bg-orange-500 rounded-full mt-1" />}
+          {activeTab === 'search' && <div className={`w-1 h-1 rounded-full mt-1 ${
+            activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
+          }`} />}
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('orders')}
           className={`flex flex-col items-center justify-center flex-1 h-full transition-colors relative ${
-            activeTab === 'orders' ? 'text-orange-500' : 'text-gray-500'
+            activeTab === 'orders' && activeMode === 'food' ? 'text-orange-500' : activeTab === 'orders' ? 'text-green-500' : 'text-gray-500'
           }`}
         >
           <ShoppingBag size={24} />
-          <span className="absolute top-2 right-6 bg-orange-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+          <span className={`absolute top-2 right-6 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center ${
+            activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
+          }`}>
             2
           </span>
-          {activeTab === 'orders' && <div className="w-1 h-1 bg-orange-500 rounded-full mt-1" />}
+          {activeTab === 'orders' && <div className={`w-1 h-1 rounded-full mt-1 ${
+            activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
+          }`} />}
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('saved')}
           className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-            activeTab === 'saved' ? 'text-orange-500' : 'text-gray-500'
+            activeTab === 'saved' && activeMode === 'food' ? 'text-orange-500' : activeTab === 'saved' ? 'text-green-500' : 'text-gray-500'
           }`}
         >
           <Heart size={24} />
-          {activeTab === 'saved' && <div className="w-1 h-1 bg-orange-500 rounded-full mt-1" />}
+          {activeTab === 'saved' && <div className={`w-1 h-1 rounded-full mt-1 ${
+            activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
+          }`} />}
         </button>
         <button
           type="button"
           onClick={() => setActiveTab('profile')}
           className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-            activeTab === 'profile' ? 'text-orange-500' : 'text-gray-500'
+            activeTab === 'profile' && activeMode === 'food' ? 'text-orange-500' : activeTab === 'profile' ? 'text-green-500' : 'text-gray-500'
           }`}
         >
           <User size={24} />
-          {activeTab === 'profile' && <div className="w-1 h-1 bg-orange-500 rounded-full mt-1" />}
+          {activeTab === 'profile' && <div className={`w-1 h-1 rounded-full mt-1 ${
+            activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
+          }`} />}
         </button>
       </nav>
 
