@@ -1,7 +1,7 @@
 import AuthLogin from './AuthLogin.jsx'
 import AuthSignup from './AuthSignup.jsx'
 
-export default function AuthPanel({ open, mode, onClose, onModeChange }) {
+export default function AuthPanel({ open, mode, onClose, onModeChange, activeMode }) {
   const isLogin = mode === 'login'
 
   return (
@@ -27,9 +27,9 @@ export default function AuthPanel({ open, mode, onClose, onModeChange }) {
 
         <div className="authPanelBody">
           {isLogin ? (
-            <AuthLogin onSuccess={onClose} onOpenSignup={() => onModeChange('signup')} />
+            <AuthLogin onSuccess={onClose} onOpenSignup={() => onModeChange('signup')} activeMode={activeMode} />
           ) : (
-            <AuthSignup onSuccess={onClose} onOpenLogin={() => onModeChange('login')} />
+            <AuthSignup onSuccess={onClose} onOpenLogin={() => onModeChange('login')} activeMode={activeMode} />
           )}
         </div>
       </aside>

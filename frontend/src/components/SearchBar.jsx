@@ -123,7 +123,8 @@ export default function SearchBar({
   placeholder = "Search",
   isMobile = false,
   onSearch,
-  accent = { border: 'border-gray-200', bg: 'bg-gray-500' }
+  accent = { border: 'border-gray-200', bg: 'bg-gray-500' },
+  activeMode = 'food'
 }) {
   const { setSearchQuery } = useApp();
   const [query, setQuery] = useState('');
@@ -277,8 +278,8 @@ export default function SearchBar({
   };
 
   const inputClasses = isMobile
-    ? `block w-full h-10 pl-10 pr-4 border ${accent.border} rounded-full ${accent.bgLight} text-sm font-medium text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 ${accent.focus}`
-    : `block w-full h-10 pl-11 pr-4 border ${accent.border} rounded-full ${accent.bgLight} text-sm font-medium text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 ${accent.focus}`;
+    ? `block w-full h-10 pl-10 pr-4 border ${accent.border} rounded-full ${accent.bgLight} text-sm font-medium text-gray-900 placeholder-gray-400 hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} focus:outline-none focus:ring-2 ${accent.focus}`
+    : `block w-full h-10 pl-11 pr-4 border ${accent.border} rounded-full ${accent.bgLight} text-sm font-medium text-gray-900 placeholder-gray-400 hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} focus:outline-none focus:ring-2 ${accent.focus}`;
 
   return (
     <div className={`relative h-10 ${isMobile ? 'w-full' : 'max-w-[220px]'}`} ref={dropdownRef}>

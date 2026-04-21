@@ -9,6 +9,7 @@ export default function TextField({
   right,
   error,
   inputMode,
+  activeMode = 'food',
 }) {
   return (
     <div className="field">
@@ -28,6 +29,17 @@ export default function TextField({
         value={value}
         onChange={onChange}
         aria-invalid={Boolean(error) || undefined}
+        style={{
+          borderColor: activeMode === 'food' ? '#f97316' : '#22c55e',
+        }}
+        onFocus={(e) => {
+          e.target.style.borderColor = activeMode === 'food' ? '#f97316' : '#22c55e'
+          e.target.style.backgroundColor = activeMode === 'food' ? '#fff7ed' : '#f0fdf4'
+        }}
+        onBlur={(e) => {
+          e.target.style.borderColor = '#e5e7eb'
+          e.target.style.backgroundColor = '#ffffff'
+        }}
       />
       {error ? <div className="error">{error}</div> : null}
     </div>

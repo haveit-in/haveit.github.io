@@ -7,6 +7,7 @@ import AuthPanel from './components/AuthPanel.jsx'
 function App() {
   const [authOpen, setAuthOpen] = useState(false)
   const [authMode, setAuthMode] = useState('login') // 'login' | 'signup'
+  const [activeMode, setActiveMode] = useState('food') // 'food' | 'groceries'
 
   const openLogin = useCallback(() => {
     setAuthMode('login')
@@ -44,7 +45,7 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<Landing onOpenLogin={openLogin} onOpenSignup={openSignup} />}
+          element={<Landing onOpenLogin={openLogin} onOpenSignup={openSignup} activeMode={activeMode} setActiveMode={setActiveMode} />}
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
@@ -54,6 +55,7 @@ function App() {
         mode={authMode}
         onClose={closeAuth}
         onModeChange={setAuthMode}
+        activeMode={activeMode}
       />
     </>
   )

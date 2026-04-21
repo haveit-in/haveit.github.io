@@ -64,7 +64,19 @@ const ChevronRightIcon = ({ size = 20 }) => (
   </svg>
 )
 
-export default function Landing({ onOpenLogin, onOpenSignup }) {
+export default function Landing({ onOpenLogin, onOpenSignup, activeMode, setActiveMode }) {
+  // Add no-scrollbar styles
+  useEffect(() => {
+    const style = document.createElement('style')
+    style.textContent = `
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    `
+    document.head.appendChild(style)
+    return () => {
+      document.head.removeChild(style)
+    }
+  }, [])
   const [placeholder, setPlaceholder] = useState(searchPhrases[0])
   const [phraseIndex, setPhraseIndex] = useState(0)
   const [charIndex, setCharIndex] = useState(searchPhrases[0].length)
@@ -73,7 +85,6 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
   const [isFavoritesModalOpen, setIsFavoritesModalOpen] = useState(false)
   const [isCartModalOpen, setIsCartModalOpen] = useState(false)
   const [showBanner, setShowBanner] = useState(true)
-  const [activeMode, setActiveMode] = useState('food')
   const [activeTab, setActiveTab] = useState('home')
   const [foodSlide, setFoodSlide] = useState(0)
   const [foodCategory, setFoodCategory] = useState('Burgers')
@@ -86,8 +97,8 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
 
   // Accent colors based on active mode
   const accent = activeMode === 'food'
-    ? { border: 'border-orange-300', icon: 'text-orange-500', bg: 'bg-orange-500', bgLight: 'bg-orange-50', focus: 'focus:ring-orange-500/30 focus:border-orange-500', locationFocus: 'focus:border-orange-500' }
-    : { border: 'border-green-300', icon: 'text-green-600', bg: 'bg-green-600', bgLight: 'bg-green-50', focus: 'focus:ring-green-600/30 focus:border-green-600', locationFocus: 'focus:border-green-600' }
+    ? { border: 'border-gray-300', icon: 'text-orange-500', bg: 'bg-orange-500', bgLight: 'bg-orange-50', focus: 'focus:ring-orange-500/30 focus:border-orange-500', locationFocus: 'focus:border-orange-500' }
+    : { border: 'border-gray-300', icon: 'text-green-600', bg: 'bg-green-600', bgLight: 'bg-green-50', focus: 'focus:ring-green-600/30 focus:border-green-600', locationFocus: 'focus:border-green-600' }
 
   useEffect(() => {
     const current = searchPhrases[phraseIndex]
@@ -121,19 +132,22 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
   }, [charIndex, isDeleting, phraseIndex])
 
   useEffect(() => {
-    if (activeMode !== 'food') return
     const interval = setInterval(() => {
       setFoodSlide((prev) => (prev + 1) % 3)
     }, 3500)
     return () => clearInterval(interval)
-  }, [activeMode])
+  }, [])
 
   useEffect(() => {
-    if (activeMode !== 'groceries') return
     const interval = setInterval(() => {
       setGrocerySlide((prev) => (prev + 1) % 3)
     }, 3500)
     return () => clearInterval(interval)
+  }, [])
+
+  useEffect(() => {
+    setFoodCategory('Burgers')
+    setGroceryCategory('Vegetables')
   }, [activeMode])
 
   return (
@@ -185,7 +199,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                   <button
                     type="button"
                     onClick={() => setIsFavoritesModalOpen(true)}
-                    className={`h-10 w-10 rounded-full border ${accent.border} ${accent.bgLight} hover:bg-opacity-80 transition-colors flex items-center justify-center ${accent.icon}`}
+                    className={`h-10 w-10 rounded-full border border-gray-300 ${accent.bgLight} hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} hover:bg-opacity-80 transition-colors flex items-center justify-center ${accent.icon}`}
                     aria-label="Favorites"
                   >
                     <HeartIcon size={20} />
@@ -195,7 +209,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                   <button
                     type="button"
                     onClick={() => setIsCartModalOpen(true)}
-                    className={`h-10 w-10 rounded-full border ${accent.border} ${accent.bgLight} hover:bg-opacity-80 transition-colors flex items-center justify-center ${accent.icon}`}
+                    className={`h-10 w-10 rounded-full border border-gray-300 ${accent.bgLight} hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} hover:bg-opacity-80 transition-colors flex items-center justify-center ${accent.icon}`}
                     aria-label="Cart"
                   >
                     <CartIcon size={20} />
@@ -205,7 +219,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                   <button
                     type="button"
                     onClick={onOpenLogin}
-                    className={`h-10 px-4 rounded-full text-sm font-medium ${accent.icon} border ${accent.border} ${accent.bgLight} hover:bg-opacity-80 transition-colors`}
+                    className={`h-10 px-4 rounded-full text-sm font-medium ${accent.icon} border border-gray-300 ${accent.bgLight} hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} hover:bg-opacity-80 transition-colors`}
                   >
                     Login
                   </button>
@@ -268,12 +282,12 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
 
               </header>
 
-      {/* MODE TOGGLE */}
-      <div className="bg-white sticky top-14 md:top-20 z-40 border-b border-gray-100 md:border-b-0">
-        <div className="md:max-w-6xl md:mx-auto md:px-6">
-          <div className="px-4 py-4 md:py-6 flex justify-center md:justify-between md:items-center gap-4">
+      {/* MODE TOGGLE - Desktop Secondary Nav */}
+      <div className="bg-white sticky top-[57px] md:flex hidden z-10 bg-white border-b border-gray-100">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="py-4 flex items-center gap-4">
             {/* Mode Toggle Buttons */}
-            <div className="bg-gray-100 rounded-2xl p-1 flex gap-1 md:max-w-sm w-full md:w-auto">
+            <div className="bg-gray-100 rounded-2xl p-1 flex gap-1">
               <button
                 type="button"
                 onClick={() => setActiveMode('food')}
@@ -309,8 +323,42 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                     : 'Search for vegetables, groceries...'
                 }
                 accent={accent}
+                activeMode={activeMode}
               />
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* MOBILE MODE TOGGLE */}
+      <div className="md:hidden bg-white sticky top-14 z-40 border-b border-gray-100">
+        <div className="px-4 py-4 flex justify-center gap-4">
+          {/* Mode Toggle Buttons */}
+          <div className="bg-gray-100 rounded-2xl p-1 flex gap-1 w-full">
+            <button
+              type="button"
+              onClick={() => setActiveMode('food')}
+              className={`flex-1 px-6 py-3 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 ${
+                activeMode === 'food'
+                  ? `${accent.bg} text-white`
+                  : 'text-gray-500 bg-transparent'
+              }`}
+            >
+              <UtensilsCrossed size={20} />
+              <span>Food Delivery</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveMode('groceries')}
+              className={`flex-1 px-6 py-3 rounded-xl font-medium transition-colors flex items-center justify-center gap-2 ${
+                activeMode === 'groceries'
+                  ? 'bg-green-600 text-white'
+                  : 'text-gray-500 bg-transparent'
+              }`}
+            >
+              <ShoppingCart size={20} />
+              <span>Groceries</span>
+            </button>
           </div>
         </div>
       </div>
@@ -325,12 +373,13 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
               : 'Search for vegetables, groceries...'
           }
           accent={accent}
+          activeMode={activeMode}
         />
       </div>
 
       {/* CONTENT AREA */}
       <main
-        className={`min-h-screen bg-white md:max-w-6xl md:mx-auto md:px-6 pb-24 md:pb-0 ${
+        className={`min-h-screen bg-white md:max-w-6xl md:mx-auto md:px-6 pb-24 md:pb-6 ${
           activeMode === 'food' ? 'food-content' : 'groceries-content'
         }`}
       >
@@ -355,7 +404,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                       <div className="bg-white/20 text-white text-xs font-bold rounded px-2 py-0.5 w-fit mb-3">
                         FIRST40
                       </div>
-                      <button className="bg-white text-orange-500 font-bold rounded-full px-5 py-2 w-fit text-sm">
+                      <button className="bg-white text-orange-500 font-bold rounded-full px-5 py-2 w-fit text-sm hover:opacity-90 transition-opacity duration-150">
                         Order Now →
                       </button>
                     </>
@@ -370,7 +419,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                       <div className="bg-white/20 text-white text-xs font-bold rounded px-2 py-0.5 w-fit mb-3">
                         COMBO21
                       </div>
-                      <button className="bg-white text-orange-500 font-bold rounded-full px-5 py-2 w-fit text-sm">
+                      <button className="bg-white text-orange-500 font-bold rounded-full px-5 py-2 w-fit text-sm hover:opacity-90 transition-opacity duration-150">
                         Grab Deal →
                       </button>
                     </>
@@ -385,7 +434,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                       <div className="bg-white/20 text-white text-xs font-bold rounded px-2 py-0.5 w-fit mb-3">
                         FREEDEL
                       </div>
-                      <button className="bg-white text-orange-500 font-bold rounded-full px-5 py-2 w-fit text-sm">
+                      <button className="bg-white text-orange-500 font-bold rounded-full px-5 py-2 w-fit text-sm hover:opacity-90 transition-opacity duration-150">
                         Order Now →
                       </button>
                     </>
@@ -429,22 +478,22 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
 
             {/* 2. FEATURE PILLS */}
             <div className="md:px-0">
-              <div className="flex flex-nowrap overflow-x-auto md:overflow-visible md:flex md:justify-center gap-3 md:gap-4 scrollbar-hide pb-2 md:pb-0 px-2 md:px-0">
-                <div className="flex flex-row items-center gap-3 bg-orange-50 rounded-2xl shadow-sm px-4 py-3 flex-shrink-0 border border-gray-200">
+              <div className="flex flex-nowrap overflow-x-auto md:overflow-visible md:flex md:justify-center gap-3 md:gap-4 no-scrollbar pb-2 md:pb-0 px-2 md:px-0">
+                <div className="flex flex-row items-center gap-3 bg-orange-50 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 px-4 py-3 flex-shrink-0 border border-gray-200">
                   <div className="text-xl whitespace-nowrap flex-shrink-0">🚀</div>
                   <div className="flex flex-col">
                     <p className="text-sm font-bold text-gray-900">Free Delivery</p>
                     <p className="text-xs text-gray-400">Orders above ₹199</p>
                   </div>
                 </div>
-                <div className="flex flex-row items-center gap-3 bg-orange-50 rounded-2xl shadow-sm px-4 py-3 flex-shrink-0 border border-gray-200">
+                <div className="flex flex-row items-center gap-3 bg-orange-50 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 px-4 py-3 flex-shrink-0 border border-gray-200">
                   <div className="text-xl whitespace-nowrap flex-shrink-0">⏱</div>
                   <div className="flex flex-col">
                     <p className="text-sm font-bold text-gray-900">30 Min Delivery</p>
                     <p className="text-xs text-gray-400">Guaranteed fast</p>
                   </div>
                 </div>
-                <div className="flex flex-row items-center gap-3 bg-orange-50 rounded-2xl shadow-sm px-4 py-3 flex-shrink-0 border border-gray-200">
+                <div className="flex flex-row items-center gap-3 bg-orange-50 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 px-4 py-3 flex-shrink-0 border border-gray-200">
                   <div className="text-xl whitespace-nowrap flex-shrink-0">🎁</div>
                   <div className="flex flex-col">
                     <p className="text-sm font-bold text-gray-900">Daily Offers</p>
@@ -456,20 +505,20 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
 
             {/* 3. WHAT'S ON YOUR MIND */}
             <div className="md:px-0">
-              <div className="flex items-center justify-between mb-4 px-4 md:px-0">
+              <div className="flex items-center justify-between mb-3 px-4 md:px-0">
                 <h2 className="font-bold text-lg">What's on your mind?</h2>
                 <a href="#" className="text-orange-500 text-sm font-medium hover:underline">
                   See All
                 </a>
               </div>
-              <div className="flex flex-nowrap overflow-x-auto md:overflow-visible md:flex md:justify-center md:gap-6 gap-2 scrollbar-hide pb-2 md:pb-0 px-2 md:px-0">
+              <div className="flex flex-nowrap overflow-x-auto md:overflow-visible md:flex md:justify-center md:gap-6 gap-2 no-scrollbar pb-2 md:pb-0 px-2 md:px-0">
                 {['Burgers', 'Pizza', 'Sushi', 'Tacos', 'Pasta', 'Salads'].map((category, idx) => {
                   const emojis = ['🍔', '🍕', '🍣', '🌮', '🍝', '🥗']
                   return (
                     <button
                       key={idx}
                       onClick={() => setFoodCategory(category)}
-                      className="flex flex-col items-center gap-1 cursor-pointer flex-shrink-0"
+                      className="flex flex-col items-center gap-1 cursor-pointer flex-shrink-0 hover:scale-105 transition-transform duration-150"
                     >
                       <div
                         className={`w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center text-2xl md:text-3xl transition-colors ${
@@ -494,7 +543,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                 })}
               </div>
               <div className="flex justify-center mt-4">
-                <button className="border border-orange-200 text-orange-500 rounded-full px-4 md:px-6 py-2 text-xs md:text-sm font-medium hover:bg-orange-50 transition-colors">
+                <button className="border border-orange-200 text-orange-500 rounded-full px-4 md:px-6 py-2 text-xs md:text-sm font-medium hover:opacity-90 transition-opacity duration-150">
                   🍽 Order your favourites
                 </button>
               </div>
@@ -502,13 +551,13 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
 
             {/* 4. TODAY'S SPECIALS */}
             <div className="md:px-0">
-              <div className="flex items-center justify-between mb-4 px-4 md:px-0">
+              <div className="flex items-center justify-between mb-3 px-4 md:px-0">
                 <h2 className="font-bold text-lg">⭐ Today's Specials</h2>
                 <a href="#" className="text-orange-500 text-sm font-medium hover:underline">
                   See All
                 </a>
               </div>
-              <div className="flex flex-nowrap overflow-x-auto md:overflow-visible md:grid md:grid-cols-4 gap-2 md:gap-4 scrollbar-hide pb-2 md:pb-0 px-2 md:px-0">
+              <div className="flex flex-nowrap overflow-x-auto md:overflow-visible md:grid md:grid-cols-4 gap-2 md:gap-4 no-scrollbar pb-2 md:pb-0 px-2 md:px-0">
                 {[
                   { name: 'Pesto Pasta', star: '4.7', price: '279' },
                   { name: 'Green Salad Bowl', star: '4.5', price: '199' },
@@ -517,7 +566,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                 ].map((item, idx) => (
                   <div
                     key={idx}
-                    className="w-40 md:w-auto rounded-2xl bg-white shadow-sm overflow-hidden flex-shrink-0 relative"
+                    className="w-40 md:w-auto rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden flex-shrink-0 relative"
                   >
                     <div className="h-28 bg-gray-200 relative" />
                     <div className="p-3">
@@ -527,7 +576,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                       </div>
                       <p className="text-orange-500 font-bold text-xs md:text-sm">₹{item.price}</p>
                     </div>
-                    <button className="absolute bottom-2 right-2 bg-orange-500 text-white rounded-full w-6 h-6 md:w-7 md:h-7 flex items-center justify-center hover:bg-orange-600 transition-colors text-sm">
+                    <button className="absolute bottom-2 right-2 bg-orange-500 text-white rounded-full w-6 h-6 md:w-7 md:h-7 flex items-center justify-center hover:opacity-90 transition-opacity duration-150 text-sm">
                       +
                     </button>
                   </div>
@@ -537,7 +586,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
 
             {/* 5. POPULAR RIGHT NOW */}
             <div className="md:px-0">
-              <div className="flex items-center justify-between mb-4 px-4 md:px-0">
+              <div className="flex items-center justify-between mb-3 px-4 md:px-0">
                 <h2 className="font-bold text-lg">🔥 Popular Right Now</h2>
                 <a href="#" className="text-orange-500 text-sm font-medium hover:underline">
                   View All
@@ -585,7 +634,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                   const itemId = `${item.name}-${idx}`
                   const inCart = foodCart[itemId] || 0
                   return (
-                    <div key={idx} className="flex bg-white rounded-2xl shadow-sm overflow-hidden mb-3 md:mb-0">
+                    <div key={idx} className="flex bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden mb-3 md:mb-0">
                       {/* Image Area */}
                       <div className="w-24 h-24 md:w-32 md:h-32 bg-gray-200 relative flex-shrink-0">
                         <div className={`absolute top-2 left-2 text-white text-xs font-bold rounded px-2 py-0.5 ${item.badge.color}`}>
@@ -632,7 +681,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                                   [itemId]: 1,
                                 }))
                               }}
-                              className="bg-orange-500 text-white rounded-full px-2 md:px-3 py-0.5 md:py-1 text-xs md:text-sm font-medium hover:bg-orange-600 transition-colors"
+                              className="bg-orange-500 text-white rounded-full px-2 md:px-3 py-0.5 md:py-1 text-xs md:text-sm font-medium hover:opacity-90 transition-opacity duration-150"
                             >
                               + Add
                             </button>
@@ -640,10 +689,18 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                             <div className="flex items-center gap-1 bg-orange-500 text-white rounded-full px-1 md:px-2 py-0.5 text-xs md:text-sm">
                               <button
                                 onClick={() => {
-                                  setFoodCart((prev) => ({
-                                    ...prev,
-                                    [itemId]: Math.max(0, prev[itemId] - 1),
-                                  }))
+                                  if (inCart === 1) {
+                                    setFoodCart((prev) => {
+                                      const newCart = { ...prev }
+                                      delete newCart[itemId]
+                                      return newCart
+                                    })
+                                  } else {
+                                    setFoodCart((prev) => ({
+                                      ...prev,
+                                      [itemId]: prev[itemId] - 1,
+                                    }))
+                                  }
                                 }}
                                 className="hover:opacity-80"
                               >
@@ -685,7 +742,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                 <div className="relative z-10">
                   <h3 className="font-bold text-white text-lg md:text-xl mb-1">Hungry for more? 🍕</h3>
                   <p className="text-white/80 text-xs md:text-sm mb-3">Explore 200+ restaurants in your area</p>
-                  <button className="border-2 border-white text-white rounded-full px-4 md:px-5 py-2 text-xs md:text-sm font-semibold hover:bg-white/10 transition-colors">
+                  <button className="border-2 border-white text-white rounded-full px-4 md:px-5 py-2 text-xs md:text-sm font-semibold hover:bg-white/10 transition-colors hover:opacity-90 transition-opacity duration-150">
                     Explore All Restaurants →
                   </button>
                 </div>
@@ -730,7 +787,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                       <div className="bg-white/20 text-white text-xs font-bold rounded px-2 py-0.5 w-fit mb-3">
                         FRUIT30
                       </div>
-                      <button className="bg-white text-green-600 font-bold rounded-full px-5 py-2 w-fit text-sm">
+                      <button className="bg-white text-green-600 font-bold rounded-full px-5 py-2 w-fit text-sm hover:opacity-90 transition-opacity duration-150">
                         Buy Now →
                       </button>
                     </>
@@ -745,7 +802,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                       <div className="bg-white/20 text-white text-xs font-bold rounded px-2 py-0.5 w-fit mb-3">
                         FRESH50
                       </div>
-                      <button className="bg-white text-green-600 font-bold rounded-full px-5 py-2 w-fit text-sm">
+                      <button className="bg-white text-green-600 font-bold rounded-full px-5 py-2 w-fit text-sm hover:opacity-90 transition-opacity duration-150">
                         Shop Now →
                       </button>
                     </>
@@ -760,7 +817,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                       <div className="bg-white/20 text-white text-xs font-bold rounded px-2 py-0.5 w-fit mb-3">
                         GROC299
                       </div>
-                      <button className="bg-white text-green-600 font-bold rounded-full px-5 py-2 w-fit text-sm">
+                      <button className="bg-white text-green-600 font-bold rounded-full px-5 py-2 w-fit text-sm hover:opacity-90 transition-opacity duration-150">
                         Order Now →
                       </button>
                     </>
@@ -804,22 +861,22 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
 
             {/* 2. FEATURE PILLS */}
             <div className="md:px-0">
-              <div className="flex flex-nowrap overflow-x-auto md:overflow-visible md:flex md:justify-center gap-3 md:gap-4 scrollbar-hide pb-2 md:pb-0 px-2 md:px-0">
-                <div className="flex flex-row items-center gap-3 bg-orange-50 rounded-2xl shadow-sm px-4 py-3 flex-shrink-0 border border-gray-200">
+              <div className="flex flex-nowrap overflow-x-auto md:overflow-visible md:flex md:justify-center gap-3 md:gap-4 no-scrollbar pb-2 md:pb-0 px-2 md:px-0">
+                <div className="flex flex-row items-center gap-3 bg-orange-50 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 px-4 py-3 flex-shrink-0 border border-gray-200">
                   <div className="text-xl whitespace-nowrap flex-shrink-0">⚡</div>
                   <div className="flex flex-col">
                     <p className="text-sm font-bold text-gray-900">20 Min Delivery</p>
                     <p className="text-xs text-gray-400">Ultra-fast grocery</p>
                   </div>
                 </div>
-                <div className="flex flex-row items-center gap-3 bg-orange-50 rounded-2xl shadow-sm px-4 py-3 flex-shrink-0 border border-gray-200">
+                <div className="flex flex-row items-center gap-3 bg-orange-50 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 px-4 py-3 flex-shrink-0 border border-gray-200">
                   <div className="text-xl whitespace-nowrap flex-shrink-0">🌿</div>
                   <div className="flex flex-col">
                     <p className="text-sm font-bold text-gray-900">100% Fresh</p>
                     <p className="text-xs text-gray-400">Farm to doorstep</p>
                   </div>
                 </div>
-                <div className="flex flex-row items-center gap-3 bg-orange-50 rounded-2xl shadow-sm px-4 py-3 flex-shrink-0 border border-gray-200">
+                <div className="flex flex-row items-center gap-3 bg-orange-50 rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 px-4 py-3 flex-shrink-0 border border-gray-200">
                   <div className="text-xl whitespace-nowrap flex-shrink-0">💰</div>
                   <div className="flex flex-col">
                     <p className="text-sm font-bold text-gray-900">Best Price</p>
@@ -831,13 +888,13 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
 
             {/* 3. SHOP BY CATEGORY */}
             <div className="md:px-0">
-              <div className="flex items-center justify-between mb-4 px-4 md:px-0">
+              <div className="flex items-center justify-between mb-3 px-4 md:px-0">
                 <h2 className="font-bold text-lg">Shop by Category</h2>
                 <a href="#" className="text-green-600 text-sm font-medium hover:underline">
                   See All
                 </a>
               </div>
-              <div className="flex flex-nowrap overflow-x-auto md:overflow-visible md:flex md:justify-center md:gap-6 gap-2 scrollbar-hide pb-2 md:pb-0 px-2 md:px-0">
+              <div className="flex flex-nowrap overflow-x-auto md:overflow-visible md:flex md:justify-center md:gap-6 gap-2 no-scrollbar pb-2 md:pb-0 px-2 md:px-0">
                 {[
                   { name: 'Vegetables', emoji: '🥦' },
                   { name: 'Fruits', emoji: '🍎' },
@@ -849,7 +906,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                   <button
                     key={idx}
                     onClick={() => setGroceryCategory(category.name)}
-                    className="flex flex-col items-center gap-1 cursor-pointer flex-shrink-0"
+                    className="flex flex-col items-center gap-1 cursor-pointer flex-shrink-0 hover:scale-105 transition-transform duration-150"
                   >
                     <div
                       className={`w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center text-2xl md:text-3xl transition-colors ${
@@ -873,7 +930,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                 ))}
               </div>
               <div className="flex justify-center mt-4">
-                <button className="border border-green-200 text-green-600 rounded-full px-4 md:px-6 py-2 text-xs md:text-sm font-medium hover:bg-green-50 transition-colors">
+                <button className="border border-green-200 text-green-600 rounded-full px-4 md:px-6 py-2 text-xs md:text-sm font-medium hover:opacity-90 transition-opacity duration-150">
                   🛒 Shop fresh & save
                 </button>
               </div>
@@ -881,13 +938,13 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
 
             {/* 4. QUICK ADD ESSENTIALS */}
             <div className="md:px-0">
-              <div className="flex items-center justify-between mb-4 px-4 md:px-0">
+              <div className="flex items-center justify-between mb-3 px-4 md:px-0">
                 <h2 className="font-bold text-lg">⚡ Quick Add Essentials</h2>
                 <a href="#" className="text-green-600 text-sm font-medium hover:underline">
                   See All
                 </a>
               </div>
-              <div className="flex flex-nowrap overflow-x-auto md:overflow-visible md:grid md:grid-cols-5 gap-3 md:gap-4 scrollbar-hide pb-2 md:pb-0 px-2 md:px-0">
+              <div className="flex flex-nowrap overflow-x-auto md:overflow-visible md:grid md:grid-cols-5 gap-3 md:gap-4 no-scrollbar pb-2 md:pb-0 px-2 md:px-0">
                 {[
                   { name: 'Potato', emoji: '🥔', weight: '1kg', price: '29' },
                   { name: 'Tomato', emoji: '🍅', weight: '500g', price: '24' },
@@ -900,7 +957,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                   return (
                     <div
                       key={idx}
-                      className="w-36 md:w-auto rounded-2xl border border-gray-100 bg-white p-3 flex flex-col items-center gap-1 flex-shrink-0"
+                      className="w-36 md:w-auto rounded-2xl border border-gray-100 bg-white p-3 flex flex-col items-center gap-1 flex-shrink-0 hover:shadow-md transition-shadow duration-200"
                     >
                       <div className="text-4xl">{item.emoji}</div>
                       <p className="font-bold text-sm text-center">{item.name}</p>
@@ -914,7 +971,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                               [itemId]: 1,
                             }))
                           }}
-                          className="w-full border border-green-500 text-green-600 rounded-full py-1 text-sm font-medium hover:bg-green-50 transition-colors"
+                          className="w-full border border-green-500 text-green-600 rounded-full py-1 text-sm font-medium hover:opacity-90 transition-opacity duration-150"
                         >
                           + Add
                         </button>
@@ -922,10 +979,18 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                         <div className="flex items-center gap-1 bg-green-600 text-white rounded-full px-2 py-1 text-sm w-full justify-center">
                           <button
                             onClick={() => {
-                              setGroceryCart((prev) => ({
-                                ...prev,
-                                [itemId]: Math.max(0, prev[itemId] - 1),
-                              }))
+                              if (inCart === 1) {
+                                setGroceryCart((prev) => {
+                                  const newCart = { ...prev }
+                                  delete newCart[itemId]
+                                  return newCart
+                                })
+                              } else {
+                                setGroceryCart((prev) => ({
+                                  ...prev,
+                                  [itemId]: prev[itemId] - 1,
+                                }))
+                              }
                             }}
                             className="hover:opacity-80"
                           >
@@ -953,7 +1018,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
 
             {/* 5. FRESH PICKS FOR YOU */}
             <div className="md:px-0">
-              <div className="flex items-center justify-between mb-4 px-4 md:px-0">
+              <div className="flex items-center justify-between mb-3 px-4 md:px-0">
                 <h2 className="font-bold text-lg">🌿 Fresh Picks for You</h2>
                 <a href="#" className="text-green-600 text-sm font-medium hover:underline">
                   View All
@@ -997,7 +1062,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                   const itemId = `fresh-${item.name}-${idx}`
                   const inCart = groceryCart[itemId] || 0
                   return (
-                    <div key={idx} className="rounded-2xl bg-white shadow-sm overflow-hidden">
+                    <div key={idx} className="rounded-2xl bg-white shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
                       {/* Image Area */}
                       <div className="h-36 bg-gray-200 relative w-full">
                         <div className={`absolute top-2 left-2 text-white text-xs font-bold rounded-full px-2 py-0.5 ${item.badge.color}`}>
@@ -1039,7 +1104,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                                 [itemId]: 1,
                               }))
                             }}
-                            className="w-full bg-green-600 text-white rounded-full py-1 text-sm font-medium hover:bg-green-700 transition-colors"
+                            className="w-full bg-green-600 text-white rounded-full py-1 text-sm font-medium hover:opacity-90 transition-opacity duration-150"
                           >
                             + Add
                           </button>
@@ -1047,10 +1112,18 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                           <div className="flex items-center gap-1 bg-green-600 text-white rounded-full px-2 py-1 text-sm w-full justify-center">
                             <button
                               onClick={() => {
-                                setGroceryCart((prev) => ({
-                                  ...prev,
-                                  [itemId]: Math.max(0, prev[itemId] - 1),
-                                }))
+                                if (inCart === 1) {
+                                  setGroceryCart((prev) => {
+                                    const newCart = { ...prev }
+                                    delete newCart[itemId]
+                                    return newCart
+                                  })
+                                } else {
+                                  setGroceryCart((prev) => ({
+                                    ...prev,
+                                    [itemId]: prev[itemId] - 1,
+                                  }))
+                                }
                               }}
                               className="hover:opacity-80"
                             >
@@ -1091,7 +1164,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
                 <div className="relative z-10">
                   <h3 className="font-bold text-white text-xl mb-1">🛒 Build your weekly basket!</h3>
                   <p className="text-white/80 text-sm mb-3">Save up to 25% on bundles • 1000+ items available</p>
-                  <button className="border-2 border-white text-white rounded-full px-5 py-2 text-sm font-semibold hover:bg-white/10 transition-colors">
+                  <button className="border-2 border-white text-white rounded-full px-5 py-2 text-sm font-semibold hover:bg-white/10 transition-colors hover:opacity-90 transition-opacity duration-150">
                     Start Shopping →
                   </button>
                 </div>
@@ -1118,7 +1191,7 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
       </main>
 
       {/* FOOTER */}
-      <footer className="bg-gray-900 text-white py-12 md:py-16">
+      <footer className={`${activeMode === 'food' ? 'bg-orange-50' : 'bg-green-50'} text-gray-900 py-12 md:py-16 border-t border-gray-200`}>
         <div className="max-w-6xl mx-auto px-4 md:px-6">
           {/* Footer Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
@@ -1126,10 +1199,10 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
             <div>
               <h3 className="font-bold text-lg mb-4">Haveit</h3>
               <ul className="space-y-2">
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">About Us</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Blog</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Careers</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Press</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>About Us</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Blog</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Careers</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Press</a></li>
               </ul>
             </div>
 
@@ -1137,10 +1210,10 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
             <div>
               <h3 className="font-bold text-lg mb-4">For Users</h3>
               <ul className="space-y-2">
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">FAQs</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Help Center</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Track Order</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Feedback</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>FAQs</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Help Center</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Track Order</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Feedback</a></li>
               </ul>
             </div>
 
@@ -1148,10 +1221,10 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
             <div>
               <h3 className="font-bold text-lg mb-4">Legal</h3>
               <ul className="space-y-2">
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Privacy Policy</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Terms & Conditions</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Cookie Policy</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors text-sm">Contact Us</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Privacy Policy</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Terms & Conditions</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Cookie Policy</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Contact Us</a></li>
               </ul>
             </div>
 
@@ -1159,13 +1232,13 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
             <div>
               <h3 className="font-bold text-lg mb-4">Follow Us</h3>
               <div className="flex gap-4">
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors`}>
                   <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                 </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors`}>
                   <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2s9 5 20 5a9.5 9.5 0 00-9-5.5c4.75 2.25 7-1 7-4 0-.5 0-1 0-.5a3.5 3.5 0 005-3.12"/></svg>
                 </a>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">
+                <a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors`}>
                   <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.441 15.892c-2.102 2.048-5.455 2.048-7.557 0-.338-.328-.028-.893.421-.566 2.089 1.622 5.459 1.622 7.548 0 .449-.327.759.238.421.566zm-1.04-2.867c-1.422.733-3.664.733-5.086 0-.39-.2-.779.159-.389.451 1.623.838 4.241.838 5.864 0 .39-.292 0-.651-.389-.451zm-.741-2.481c-.371-.371-.973-.371-1.344 0s-.371.973 0 1.344c.371.371.973.371 1.344 0s.371-.973 0-1.344zm-3.722 0c-.371-.371-.973-.371-1.344 0s-.371.973 0 1.344c.371.371.973.371 1.344 0s.371-.973 0-1.344z"/></svg>
                 </a>
               </div>
@@ -1173,9 +1246,9 @@ export default function Landing({ onOpenLogin, onOpenSignup }) {
           </div>
 
           {/* Footer Bottom */}
-          <div className="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
+          <div className={`border-t ${activeMode === 'food' ? 'border-orange-200' : 'border-green-200'} pt-8 flex flex-col md:flex-row justify-between items-center text-sm ${activeMode === 'food' ? 'text-orange-700' : 'text-green-700'}`}>
             <p>&copy; 2026 Haveit. All rights reserved.</p>
-            <p>Made with ❤️ for food lovers</p>
+            <p>Made with ❤️ for {activeMode === 'food' ? 'food' : 'grocery'} lovers</p>
           </div>
         </div>
       </footer>

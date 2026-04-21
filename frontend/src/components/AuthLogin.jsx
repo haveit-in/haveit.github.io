@@ -8,7 +8,7 @@ function isValidPhone(value) {
   return digits.length >= 10 && digits.length <= 15
 }
 
-export default function AuthLogin({ onSuccess, onOpenSignup }) {
+export default function AuthLogin({ onSuccess, onOpenSignup, activeMode = 'food' }) {
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
   const [otpSent, setOtpSent] = useState(false)
@@ -58,7 +58,7 @@ export default function AuthLogin({ onSuccess, onOpenSignup }) {
 
   return (
     <div>
-      <Brand />
+      <Brand activeMode={activeMode} />
 
       {/* <h2 className="authTitle" style={{ marginTop: 14 }}>
         Log in
@@ -76,6 +76,7 @@ export default function AuthLogin({ onSuccess, onOpenSignup }) {
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           error={errors.phone}
+          activeMode={activeMode}
         />
 
         {otpSent ? (
@@ -89,10 +90,20 @@ export default function AuthLogin({ onSuccess, onOpenSignup }) {
             value={otp}
             onChange={(e) => setOtp(e.target.value)}
             error={errors.otp}
+            activeMode={activeMode}
           />
         ) : null}
 
-        <button className="btn btnPrimary" disabled={submitting} type="submit">
+        <button 
+          className={`btn ${activeMode === 'food' ? 'btnOrange' : 'btnGreen'}`} 
+          disabled={submitting} 
+          type="submit"
+          style={{
+            background: activeMode === 'food' ? '#f97316' : '#22c55e',
+            borderColor: activeMode === 'food' ? '#f97316' : '#22c55e',
+            color: '#ffffff'
+          }}
+        >
           {submitting ? 'Please wait…' : otpSent ? 'Log in' : 'Send OTP'}
         </button>
 
@@ -113,6 +124,14 @@ export default function AuthLogin({ onSuccess, onOpenSignup }) {
           className="socialIconButton"
           aria-label="Continue with Google"
           onClick={() => alert('Connect Google login here.')}
+          onMouseEnter={(e) => {
+            e.target.style.borderColor = activeMode === 'food' ? '#f97316' : '#22c55e'
+            e.target.style.backgroundColor = activeMode === 'food' ? '#fff7ed' : '#f0fdf4'
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.borderColor = '#e5e7eb'
+            e.target.style.backgroundColor = '#f9fafb'
+          }}
         >
           <GoogleIcon size={20} />
         </button>
@@ -121,6 +140,14 @@ export default function AuthLogin({ onSuccess, onOpenSignup }) {
           className="socialIconButton"
           aria-label="Continue with Facebook"
           onClick={() => alert('Connect Facebook login here.')}
+          onMouseEnter={(e) => {
+            e.target.style.borderColor = activeMode === 'food' ? '#f97316' : '#22c55e'
+            e.target.style.backgroundColor = activeMode === 'food' ? '#fff7ed' : '#f0fdf4'
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.borderColor = '#e5e7eb'
+            e.target.style.backgroundColor = '#f9fafb'
+          }}
         >
           <FacebookIcon size={20} />
         </button>

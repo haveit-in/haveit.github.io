@@ -234,8 +234,8 @@ export default function LocationSelector({ isMobile = false, isHeader = false, a
   const subText = location.areaName ? '' : 'Tap to choose';
 
   const desktopButtonClass = isHeader
-    ? `inline-flex items-center gap-3 h-10 min-w-[160px] rounded-full border ${accent.border} ${accent.bgLight} px-4 shadow-sm text-sm font-medium text-gray-900 transition hover:shadow-md focus:outline-none focus:ring-0 ${accent.locationFocus} max-w-[220px]`
-    : `flex items-center gap-2 h-10 min-w-[160px] rounded-full border ${accent.border} ${accent.bgLight} px-3 text-sm font-medium text-gray-900 transition hover:shadow-md focus:outline-none focus:ring-0 ${accent.locationFocus} max-w-[220px]`;
+    ? `inline-flex items-center gap-3 h-10 min-w-[160px] rounded-full border ${accent.border} ${accent.bgLight} px-4 shadow-sm text-sm font-medium text-gray-900 transition hover:shadow-md hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} focus:outline-none focus:ring-0 ${accent.locationFocus} max-w-[220px]`
+    : `flex items-center gap-2 h-10 min-w-[160px] rounded-full border ${accent.border} ${accent.bgLight} px-3 text-sm font-medium text-gray-900 transition hover:shadow-md hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} focus:outline-none focus:ring-0 ${accent.locationFocus} max-w-[220px]`;
 
   if (isMobile) {
     return (
@@ -243,7 +243,7 @@ export default function LocationSelector({ isMobile = false, isHeader = false, a
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-        className={`group flex items-center gap-2 text-left w-full rounded-full border ${accent.border} ${accent.bgLight} px-3 py-2 focus:outline-none focus:ring-0 ${accent.locationFocus}`}
+        className={`group flex items-center gap-2 text-left w-full rounded-full border ${accent.border} ${accent.bgLight} px-3 py-2 hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} focus:outline-none focus:ring-0 ${accent.locationFocus}`}
         aria-label="Select delivery location"
       >
         <LocationIcon size={18} className={`${accent.icon} flex-shrink-0`} />
