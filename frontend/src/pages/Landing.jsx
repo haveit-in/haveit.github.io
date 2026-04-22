@@ -1192,17 +1192,20 @@ export default function Landing({ onOpenLogin, onOpenSignup, activeMode, setActi
 
       {/* FOOTER */}
       <footer className={`${activeMode === 'food' ? 'bg-orange-50' : 'bg-green-50'} text-gray-900 py-12 md:py-16 border-t border-gray-200`}>
+
         <div className="max-w-6xl mx-auto px-4 md:px-6">
+
           {/* Footer Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
+
             {/* Company */}
             <div>
               <h3 className="font-bold text-lg mb-4">Haveit</h3>
               <ul className="space-y-2">
-                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>About Us</a></li>
-                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Blog</a></li>
-                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Careers</a></li>
-                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Press</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} text-sm`}>About Us</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} text-sm`}>Blog</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} text-sm`}>Careers</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} text-sm`}>Press</a></li>
               </ul>
             </div>
 
@@ -1210,10 +1213,10 @@ export default function Landing({ onOpenLogin, onOpenSignup, activeMode, setActi
             <div>
               <h3 className="font-bold text-lg mb-4">For Users</h3>
               <ul className="space-y-2">
-                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>FAQs</a></li>
-                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Help Center</a></li>
-                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Track Order</a></li>
-                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Feedback</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} text-sm`}>FAQs</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} text-sm`}>Help Center</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} text-sm`}>Track Order</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} text-sm`}>Feedback</a></li>
               </ul>
             </div>
 
@@ -1221,10 +1224,10 @@ export default function Landing({ onOpenLogin, onOpenSignup, activeMode, setActi
             <div>
               <h3 className="font-bold text-lg mb-4">Legal</h3>
               <ul className="space-y-2">
-                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Privacy Policy</a></li>
-                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Terms & Conditions</a></li>
-                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Cookie Policy</a></li>
-                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors text-sm`}>Contact Us</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} text-sm`}>Privacy Policy</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} text-sm`}>Terms & Conditions</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} text-sm`}>Cookie Policy</a></li>
+                <li><a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} text-sm`}>Contact Us</a></li>
               </ul>
             </div>
 
@@ -1232,25 +1235,63 @@ export default function Landing({ onOpenLogin, onOpenSignup, activeMode, setActi
             <div>
               <h3 className="font-bold text-lg mb-4">Follow Us</h3>
               <div className="flex gap-4">
-                <a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors`}>
-                  <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+
+                {/* LinkedIn */}
+                <a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-transform hover:scale-110`}>
+                  <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-10h3v10zm-1.5-11.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.784 1.764-1.75 1.764zm13.5 11.268h-3v-5.604c0-1.337-.026-3.057-1.865-3.057-1.867 0-2.154 1.459-2.154 2.967v5.694h-3v-10h2.879v1.367h.041c.401-.761 1.379-1.562 2.837-1.562 3.034 0 3.593 1.997 3.593 4.59v5.605z"/>
+                  </svg>
                 </a>
-                <a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors`}>
-                  <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2s9 5 20 5a9.5 9.5 0 00-9-5.5c4.75 2.25 7-1 7-4 0-.5 0-1 0-.5a3.5 3.5 0 005-3.12"/></svg>
+
+                {/* Instagram */}
+                <a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-transform hover:scale-110`}>
+                  <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M7.75 2h8.5C19.664 2 22 4.336 22 7.75v8.5C22 19.664 19.664 22 16.25 22h-8.5C4.336 22 2 19.664 2 16.25v-8.5C2 4.336 4.336 2 7.75 2zm0 2A3.75 3.75 0 004 7.75v8.5A3.75 3.75 0 007.75 20h8.5A3.75 3.75 0 0020 16.25v-8.5A3.75 3.75 0 0016.25 4h-8.5zm4.25 3a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6zm5.25-.75a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5z"/>
+                  </svg>
                 </a>
-                <a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-colors`}>
-                  <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm4.441 15.892c-2.102 2.048-5.455 2.048-7.557 0-.338-.328-.028-.893.421-.566 2.089 1.622 5.459 1.622 7.548 0 .449-.327.759.238.421.566zm-1.04-2.867c-1.422.733-3.664.733-5.086 0-.39-.2-.779.159-.389.451 1.623.838 4.241.838 5.864 0 .39-.292 0-.651-.389-.451zm-.741-2.481c-.371-.371-.973-.371-1.344 0s-.371.973 0 1.344c.371.371.973.371 1.344 0s.371-.973 0-1.344zm-3.722 0c-.371-.371-.973-.371-1.344 0s-.371.973 0 1.344c.371.371.973.371 1.344 0s.371-.973 0-1.344z"/></svg>
+
+                {/* Twitter */}
+                <a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-transform hover:scale-110`}>
+                  <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M22.46 6c-.77.35-1.6.58-2.46.69a4.3 4.3 0 001.88-2.37 8.59 8.59 0 01-2.72 1.04 4.28 4.28 0 00-7.29 3.9A12.14 12.14 0 013 4.89a4.28 4.28 0 001.32 5.71 4.24 4.24 0 01-1.94-.54v.05a4.29 4.29 0 003.43 4.2 4.3 4.3 0 01-1.93.07 4.29 4.29 0 004 2.98A8.6 8.6 0 012 19.54 12.13 12.13 0 008.29 21c7.55 0 11.68-6.26 11.68-11.68 0-.18 0-.35-.01-.53A8.35 8.35 0 0022.46 6z"/>
+                  </svg>
                 </a>
+
+                {/* Facebook */}
+                <a href="#" className={`${activeMode === 'food' ? 'text-orange-600 hover:text-orange-700' : 'text-green-600 hover:text-green-700'} transition-transform hover:scale-110`}>
+                  <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 5.01 3.657 9.165 8.438 9.878v-6.99H7.898V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.888h-2.33v6.99C18.343 21.165 22 17.01 22 12z"/>
+                  </svg>
+                </a>
+
               </div>
             </div>
-          </div>
 
-          {/* Footer Bottom */}
-          <div className={`border-t ${activeMode === 'food' ? 'border-orange-200' : 'border-green-200'} pt-8 flex flex-col md:flex-row justify-between items-center text-sm ${activeMode === 'food' ? 'text-orange-700' : 'text-green-700'}`}>
-            <p>&copy; 2026 Haveit. All rights reserved.</p>
-            <p>Made with ❤️ for {activeMode === 'food' ? 'food' : 'grocery'} lovers</p>
           </div>
         </div>
+
+        {/* ✅ FULL WIDTH BORDER (OUTSIDE GRID & CONTAINER) */}
+        <div className={`w-full border-t ${activeMode === 'food' ? 'border-orange-200' : 'border-green-200'}`}>
+          <div className="max-w-6xl mx-auto px-4 py-6 flex flex-col items-center text-center gap-2">
+            
+            <p className="text-xs text-gray-500">
+              © 2026 <span className="font-semibold text-orange-500">Haveit</span>. All rights reserved.
+            </p>
+
+            <p className={`${activeMode === 'food' ? 'text-orange-500' : 'text-green-500'} text-sm font-medium`}>
+              <span
+                className="text-red-500 inline-block"
+                style={{
+                  animation: "floatUpDown 2s ease-in-out infinite"
+                }}
+              >
+                ❤️
+              </span>
+            </p>
+
+          </div>
+        </div>
+
       </footer>
 
       {/* BOTTOM NAV (Mobile Only) */}
