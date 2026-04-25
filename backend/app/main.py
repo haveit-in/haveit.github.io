@@ -9,10 +9,14 @@ from app.firebase import verify_firebase_token
 from app.models import User
 from app.schemas import TokenRequest
 from app.dependencies import get_current_user
+from app.routers import restaurant, admin
 
 load_dotenv()
 
 app = FastAPI()
+
+app.include_router(restaurant.router)
+app.include_router(admin.router)
 
 app.add_middleware(
     CORSMiddleware,

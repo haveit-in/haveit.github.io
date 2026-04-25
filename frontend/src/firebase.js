@@ -1,12 +1,14 @@
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCyf5iB7biOplohFZgIghcgTD-oWWD5YpI",
-  authDomain: "haveit-13e7a.firebaseapp.com",
-  projectId: "haveit-13e7a",
-  appId: "1:542152486588:web:aae2b62001eefecbb5aab9"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
 const app = initializeApp(firebaseConfig);
+
 export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();

@@ -16,3 +16,8 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
     payload.pop("exp", None)
 
     return payload
+
+def require_admin(user=Depends(get_current_user)):
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin access required")
+    return user
