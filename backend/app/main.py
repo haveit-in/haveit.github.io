@@ -1,3 +1,4 @@
+from app.auth import create_access_token
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
@@ -7,6 +8,7 @@ from app.database import engine, get_db
 from app.firebase import verify_firebase_token
 from app.models import User
 from app.schemas import TokenRequest
+from app.dependencies import get_current_user
 
 load_dotenv()
 
@@ -58,8 +60,14 @@ def login(data: TokenRequest, db: Session = Depends(get_db)):
             db.commit()
             db.refresh(user)
 
+        token = create_access_token({
+            "user_id": str(user.id),
+            "role": user.role
+        })
+
         return {
             "message": "Login successful",
+            "access_token": token,
             "user": {
                 "id": str(user.id),
                 "role": user.role,
@@ -69,3 +77,10 @@ def login(data: TokenRequest, db: Session = Depends(get_db)):
 
     except Exception as e:
         raise HTTPException(status_code=401, detail="Invalid Firebase token")
+
+@app.get("/protected")
+def protected(user=Depends(get_current_user)):
+    return {
+        "message": "Access granted",
+        "user": user
+    }

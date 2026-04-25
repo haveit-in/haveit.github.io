@@ -221,12 +221,7 @@ export default function Landing({ onOpenLogin, onOpenSignup, activeMode, setActi
                 </MagnetWrapper>
                 <MagnetWrapper>
                   {!loading && user ? (
-                    <div className="flex items-center gap-3">
-                      <span className={`text-sm font-medium ${accent.icon}`}>
-                        Welcome {user.email}
-                      </span>
-                      <ProfileMenu activeMode={activeMode} />
-                    </div>
+                    <ProfileMenu activeMode={activeMode} />
                   ) : (
                     <button
                       type="button"

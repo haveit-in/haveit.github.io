@@ -49,8 +49,12 @@ const ProfileMenu = ({ activeMode }) => {
       {/* Dropdown Menu */}
       {isDropdownOpen && (
         <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-          {/* User Info */}
+          {/* Welcome Section */}
           <div className="px-4 py-3 border-b border-gray-100">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-lg">🎉</span>
+              <p className="text-sm font-semibold text-gray-900">Welcome</p>
+            </div>
             <p className="text-sm font-medium text-gray-900 truncate">
               {user.email}
             </p>
@@ -66,7 +70,7 @@ const ProfileMenu = ({ activeMode }) => {
             <button
               type="button"
               onClick={handleLogout}
-              className={`w-full text-left px-3 py-2 text-sm ${accent.text} hover:${accent.bgLight} rounded-md transition-colors flex items-center gap-2`}
+              className={`w-full text-left px-3 py-2 text-sm ${accent.text} ${accent.bg} text-white hover:bg-opacity-90 rounded-md transition-colors flex items-center gap-2`}
             >
               <svg 
                 width="16" 
@@ -80,7 +84,7 @@ const ProfileMenu = ({ activeMode }) => {
                 <polyline points="16,17 21,12 16,7" />
                 <line x1="21" y1="12" x2="9" y2="12" />
               </svg>
-              Logout
+              Log Out
             </button>
           </div>
         </div>
