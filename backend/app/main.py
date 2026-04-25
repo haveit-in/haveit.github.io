@@ -89,6 +89,7 @@ def login(data: TokenRequest, db: Session = Depends(get_db)):
                 "id": str(user.id),
                 "role": user.role,
                 "email": user.email,
+                "name": user.name,
                 "photo_url": user.photo_url
             }
         }

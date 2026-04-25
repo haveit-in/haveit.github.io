@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { useCallback, useEffect, useState } from 'react'
 import './app.css'
 import Landing from './pages/Landing.jsx'
+import ProfilePage from './pages/ProfilePage.jsx'
 import AuthPanel from './components/AuthPanel.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 
@@ -47,6 +48,10 @@ function App() {
         <Route
           path="/"
           element={<Landing onOpenLogin={openLogin} onOpenSignup={openSignup} activeMode={activeMode} setActiveMode={setActiveMode} />}
+        />
+        <Route
+          path="/profile"
+          element={<ProfilePage activeMode={activeMode} />}
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

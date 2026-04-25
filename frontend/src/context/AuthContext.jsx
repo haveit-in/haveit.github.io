@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('user')
         localStorage.removeItem('access_token')
         localStorage.removeItem('role')
+        localStorage.removeItem('name')
       }
     }
     setLoading(false)
@@ -60,6 +61,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('access_token', data.access_token)
       localStorage.setItem('user', JSON.stringify(data.user))
       localStorage.setItem('role', data.user.role)
+      localStorage.setItem('name', data.user.name)
       
       return data
     } catch (error) {
@@ -77,6 +79,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('access_token')
     localStorage.removeItem('user')
     localStorage.removeItem('role')
+    localStorage.removeItem('name')
   }
 
   const value = {
