@@ -2,6 +2,8 @@ import { useMemo, useState } from 'react'
 import Brand from './Brand.jsx'
 import TextField from './TextField.jsx'
 import { FacebookIcon, GoogleIcon } from './Icons.jsx'
+import { loginWithGoogle } from '../utils/auth.js'
+import { useAuth } from '../context/AuthContext.jsx'
 
 function isValidPhone(value) {
   const digits = value.replace(/[^\d]/g, '')
@@ -9,6 +11,7 @@ function isValidPhone(value) {
 }
 
 export default function AuthLogin({ onSuccess, onOpenSignup, activeMode = 'food' }) {
+  const { login } = useAuth()
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
   const [otpSent, setOtpSent] = useState(false)
@@ -123,7 +126,17 @@ export default function AuthLogin({ onSuccess, onOpenSignup, activeMode = 'food'
           type="button"
           className="socialIconButton"
           aria-label="Continue with Google"
-          onClick={() => alert('Connect Google login here.')}
+          onClick={async () => {
+            try {
+              setSubmitting(true)
+              await loginWithGoogle(login)
+              onSuccess?.()
+            } catch (error) {
+              console.error('Google login failed:', error)
+            } finally {
+              setSubmitting(false)
+            }
+          }}
           onMouseEnter={(e) => {
             e.target.style.borderColor = activeMode === 'food' ? '#f97316' : '#22c55e'
             e.target.style.backgroundColor = activeMode === 'food' ? '#fff7ed' : '#f0fdf4'

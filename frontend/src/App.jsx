@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import './app.css'
 import Landing from './pages/Landing.jsx'
 import AuthPanel from './components/AuthPanel.jsx'
+import { AuthProvider } from './context/AuthContext.jsx'
 
 function App() {
   const [authOpen, setAuthOpen] = useState(false)
@@ -41,7 +42,7 @@ function App() {
   }, [authOpen])
 
   return (
-    <>
+    <AuthProvider>
       <Routes>
         <Route
           path="/"
@@ -57,7 +58,7 @@ function App() {
         onModeChange={setAuthMode}
         activeMode={activeMode}
       />
-    </>
+    </AuthProvider>
   )
 }
 

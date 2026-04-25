@@ -4,6 +4,7 @@ import Brand from '../components/Brand.jsx'
 import SocialButton from '../components/SocialButton.jsx'
 import TextField from '../components/TextField.jsx'
 import { FacebookIcon, GoogleIcon } from '../components/Icons.jsx'
+import { loginWithGoogle } from '../utils/auth.js'
 
 function isValidPhone(value) {
   const digits = value.replace(/[^\d]/g, '')
@@ -60,7 +61,7 @@ export default function SignIn() {
             <SocialButton
               provider="Google"
               icon={<GoogleIcon />}
-              onClick={() => alert('Connect Google sign-in here.')}
+              onClick={loginWithGoogle}
             />
             <SocialButton
               provider="Facebook"
@@ -72,6 +73,7 @@ export default function SignIn() {
           <div className="divider">or</div>
 
           <form className="form" onSubmit={onSubmit}>
+            <div id="recaptcha-container"></div>
             <TextField
               id="phone"
               label="Mobile number"

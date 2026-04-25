@@ -17,12 +17,14 @@ import {
   HeartIcon,
   LogInIcon,
 } from '../components/Icons.jsx'
+import { useAuth } from '../context/AuthContext.jsx'
 import FoodCategories from '../components/FoodCategories.jsx'
 import GroceriesCategories from '../components/GroceriesCategories.jsx'
 import LocationSelector from '../components/LocationSelector.jsx'
 import SearchBar from '../components/SearchBar.jsx'
 import MagnetWrapper from '../components/MagnetWrapper.jsx'
 import ContentBar from '../components/ContentBar.jsx'
+import ProfileMenu from '../components/ProfileMenu.jsx'
 import {
   UtensilsCrossed,
   ShoppingCart,
@@ -65,6 +67,8 @@ const ChevronRightIcon = ({ size = 20 }) => (
 )
 
 export default function Landing({ onOpenLogin, onOpenSignup, activeMode, setActiveMode }) {
+  const { user, logout, loading } = useAuth()
+  
   // Add no-scrollbar styles
   useEffect(() => {
     const style = document.createElement('style')
@@ -216,13 +220,22 @@ export default function Landing({ onOpenLogin, onOpenSignup, activeMode, setActi
                   </button>
                 </MagnetWrapper>
                 <MagnetWrapper>
-                  <button
-                    type="button"
-                    onClick={onOpenLogin}
-                    className={`h-10 px-4 rounded-full text-sm font-medium ${accent.icon} border border-gray-300 ${accent.bgLight} hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} hover:bg-opacity-80 transition-colors`}
-                  >
-                    Login
-                  </button>
+                  {!loading && user ? (
+                    <div className="flex items-center gap-3">
+                      <span className={`text-sm font-medium ${accent.icon}`}>
+                        Welcome {user.email}
+                      </span>
+                      <ProfileMenu activeMode={activeMode} />
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={onOpenLogin}
+                      className={`h-10 px-4 rounded-full text-sm font-medium ${accent.icon} border border-gray-300 ${accent.bgLight} hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} hover:bg-opacity-80 transition-colors`}
+                    >
+                      Login
+                    </button>
+                  )}
                 </MagnetWrapper>
               </div>
             </div>
@@ -269,14 +282,18 @@ export default function Landing({ onOpenLogin, onOpenSignup, activeMode, setActi
             </button>
             
             {/* User Profile */}
-            <button
-              type="button"
-              onClick={onOpenLogin}
-              className={`w-8 h-8 ${accent.bg} text-white rounded-full flex items-center justify-center hover:bg-opacity-90 transition-colors`}
-              aria-label="Profile"
-            >
-              <UserIcon size={20} />
-            </button>
+            {!loading && user ? (
+              <ProfileMenu activeMode={activeMode} />
+            ) : (
+              <button
+                type="button"
+                onClick={onOpenLogin}
+                className={`w-8 h-8 ${accent.bg} text-white rounded-full flex items-center justify-center hover:bg-opacity-90 transition-colors`}
+                aria-label="Profile"
+              >
+                <UserIcon size={20} />
+              </button>
+            )}
           </div>
         </div>
 
