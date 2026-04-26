@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { useCallback, useEffect, useState } from 'react'
-import './app.css'
+import './App.css'
 import Landing from './pages/Landing.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
 import AuthPanel from './components/AuthPanel.jsx'
