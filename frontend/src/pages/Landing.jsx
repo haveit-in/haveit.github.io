@@ -219,8 +219,7 @@ export default function Landing({ onOpenLogin, onOpenSignup, activeMode, setActi
                     <CartIcon size={20} />
                   </button>
                 </MagnetWrapper>
-                <MagnetWrapper>
-                  {!loading && user ? (
+                {!loading && user ? (
                     <ProfileMenu activeMode={activeMode} />
                   ) : (
                     <button
@@ -231,7 +230,6 @@ export default function Landing({ onOpenLogin, onOpenSignup, activeMode, setActi
                       Login
                     </button>
                   )}
-                </MagnetWrapper>
               </div>
             </div>
           </div>
