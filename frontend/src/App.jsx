@@ -3,6 +3,9 @@ import { useCallback, useEffect, useState } from 'react'
 import './App.css'
 import Landing from './pages/Landing.jsx'
 import ProfilePage from './pages/ProfilePage.jsx'
+import PartnerLanding from './pages/PartnerLanding.jsx'
+import PartnerLogin from './pages/PartnerLogin.jsx'
+import PartnerRegister from './pages/PartnerRegister.jsx'
 import AuthPanel from './components/AuthPanel.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 
@@ -52,6 +55,18 @@ function App() {
         <Route
           path="/profile"
           element={<ProfilePage activeMode={activeMode} />}
+        />
+        <Route
+          path="/partner"
+          element={<PartnerLanding />}
+        />
+        <Route
+          path="/partner/login"
+          element={<PartnerLogin />}
+        />
+        <Route
+          path="/partner/register"
+          element={<PartnerRegister />}
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
