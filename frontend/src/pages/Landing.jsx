@@ -6,25 +6,22 @@ import {
   DropletIcon,
   LeafIcon,
   SearchIcon,
-  UserIcon,
-  LocationIcon,
   ChevronDownIcon,
   MenuIcon,
   StarIcon,
   PlusIcon,
   LightningIcon,
-  CartIcon,
-  HeartIcon,
   LogInIcon,
+  HeartIcon,
+  CartIcon,
 } from '../components/Icons.jsx'
 import { useAuth } from '../context/AuthContext.jsx'
 import FoodCategories from '../components/FoodCategories.jsx'
 import GroceriesCategories from '../components/GroceriesCategories.jsx'
-import LocationSelector from '../components/LocationSelector.jsx'
 import SearchBar from '../components/SearchBar.jsx'
-import MagnetWrapper from '../components/MagnetWrapper.jsx'
 import ContentBar from '../components/ContentBar.jsx'
-import ProfileMenu from '../components/ProfileMenu.jsx'
+import Navbar from '../components/Navbar.jsx'
+import MobileBottomNav from '../components/MobileBottomNav.jsx'
 import {
   UtensilsCrossed,
   ShoppingCart,
@@ -181,116 +178,16 @@ export default function Landing({ onOpenLogin, onOpenSignup, activeMode, setActi
         </div>
       )}
 
-      {/* DESKTOP HEADER (Existing) */}
-      <header className={`hidden md:block sticky top-0 z-50 ${accent.bgLight} border-b border-gray-100 backdrop-blur-sm`}>
-        <div className="max-w-7xl mx-auto px-8">
-          <div className="relative">
-            <div className="relative z-10 flex items-center justify-between h-20 gap-4">
-              <div className="flex items-center gap-4 flex-shrink-0">
-                <LocationSelector isHeader accent={accent} activeMode={activeMode} />
-              </div>
-
-              <div className="absolute left-1/2 -translate-x-1/2 top-0 flex items-center h-20">
-                <MagnetWrapper>
-                  <span className={`text-2xl font-bold ${accent.icon}`}>
-                    Haveit
-                  </span>
-                </MagnetWrapper>
-              </div>
-
-              <div className="flex items-center gap-3 whitespace-nowrap">
-                <MagnetWrapper>
-                  <button
-                    type="button"
-                    onClick={() => setIsFavoritesModalOpen(true)}
-                    className={`h-10 w-10 rounded-full border border-gray-300 ${accent.bgLight} hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} hover:bg-opacity-80 transition-colors flex items-center justify-center ${accent.icon}`}
-                    aria-label="Favorites"
-                  >
-                    <HeartIcon size={20} />
-                  </button>
-                </MagnetWrapper>
-                <MagnetWrapper>
-                  <button
-                    type="button"
-                    onClick={() => setIsCartModalOpen(true)}
-                    className={`h-10 w-10 rounded-full border border-gray-300 ${accent.bgLight} hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} hover:bg-opacity-80 transition-colors flex items-center justify-center ${accent.icon}`}
-                    aria-label="Cart"
-                  >
-                    <CartIcon size={20} />
-                  </button>
-                </MagnetWrapper>
-                {!loading && user ? (
-                    <ProfileMenu activeMode={activeMode} />
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={onOpenLogin}
-                      className={`h-10 px-4 rounded-full text-sm font-medium ${accent.icon} border border-gray-300 ${accent.bgLight} hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} hover:bg-opacity-80 transition-colors`}
-                    >
-                      Login
-                    </button>
-                  )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* MOBILE HEADER */}
-      <header className="md:hidden sticky top-0 z-50 bg-white border-b border-gray-100 backdrop-blur-sm">
-        <div className="flex items-center justify-between px-4 h-16 gap-2">
-          {/* Location Selector Left */}
-          <LocationSelector isMobile accent={accent} activeMode={activeMode} />
-          
-          {/* Logo Center */}
-          <span className={`text-xl font-bold ${accent.icon}`}>Haveit</span>
-          
-          {/* Icons Right */}
-          <div className="flex items-center gap-2">
-            {/* Notification */}
-            {/* <button
-              type="button"
-              className={`p-2 ${accent.icon} hover:opacity-70 transition-opacity relative`}
-              aria-label="Notifications"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-              </svg>
-              <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button> */}
-            
-            {/* Cart */}
-            <button
-              type="button"
-              onClick={() => {
-                setIsFavoritesModalOpen(false)
-                setIsCartModalOpen(true)
-              }}
-              className={`p-2 ${accent.icon} hover:opacity-70 transition-opacity relative`}
-              aria-label="Cart"
-            >
-              <CartIcon size={24} className={accent.icon} />
-              <span className={`absolute top-0 right-0 w-5 h-5 ${accent.bg} text-white text-xs font-bold flex items-center justify-center rounded-full`}>2</span>
-            </button>
-            
-            {/* User Profile */}
-            {!loading && user ? (
-              <ProfileMenu activeMode={activeMode} />
-            ) : (
-              <button
-                type="button"
-                onClick={onOpenLogin}
-                className={`w-8 h-8 ${accent.bg} text-white rounded-full flex items-center justify-center hover:bg-opacity-90 transition-colors`}
-                aria-label="Profile"
-              >
-                <UserIcon size={20} />
-              </button>
-            )}
-          </div>
-        </div>
-
-              </header>
+      {/* NAVBAR */}
+      <Navbar
+        user={user}
+        loading={loading}
+        onLoginClick={onOpenLogin}
+        activeMode={activeMode}
+        accent={accent}
+        setIsCartModalOpen={setIsCartModalOpen}
+        setIsFavoritesModalOpen={setIsFavoritesModalOpen}
+      />
 
       {/* MODE TOGGLE - Desktop Secondary Nav */}
       <div className="bg-white sticky top-[57px] md:flex hidden z-10 bg-white border-b border-gray-100">
@@ -1308,74 +1205,18 @@ export default function Landing({ onOpenLogin, onOpenSignup, activeMode, setActi
 
       </footer>
 
-      {/* BOTTOM NAV (Mobile Only) */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex justify-around items-center h-20 z-40">
-        <button
-          type="button"
-          onClick={() => setActiveTab('home')}
-          className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-            activeTab === 'home' && activeMode === 'food' ? 'text-orange-500' : activeTab === 'home' ? 'text-green-500' : 'text-gray-500'
-          }`}
-        >
-          <House size={24} />
-          {activeTab === 'home' && <div className={`w-1 h-1 rounded-full mt-1 ${
-            activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
-          }`} />}
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('search')}
-          className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-            activeTab === 'search' && activeMode === 'food' ? 'text-orange-500' : activeTab === 'search' ? 'text-green-500' : 'text-gray-500'
-          }`}
-        >
-          <Search size={24} />
-          {activeTab === 'search' && <div className={`w-1 h-1 rounded-full mt-1 ${
-            activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
-          }`} />}
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('orders')}
-          className={`flex flex-col items-center justify-center flex-1 h-full transition-colors relative ${
-            activeTab === 'orders' && activeMode === 'food' ? 'text-orange-500' : activeTab === 'orders' ? 'text-green-500' : 'text-gray-500'
-          }`}
-        >
-          <ShoppingBag size={24} />
-          <span className={`absolute top-2 right-6 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center ${
-            activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
-          }`}>
-            2
-          </span>
-          {activeTab === 'orders' && <div className={`w-1 h-1 rounded-full mt-1 ${
-            activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
-          }`} />}
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('saved')}
-          className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-            activeTab === 'saved' && activeMode === 'food' ? 'text-orange-500' : activeTab === 'saved' ? 'text-green-500' : 'text-gray-500'
-          }`}
-        >
-          <Heart size={24} />
-          {activeTab === 'saved' && <div className={`w-1 h-1 rounded-full mt-1 ${
-            activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
-          }`} />}
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab('profile')}
-          className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-            activeTab === 'profile' && activeMode === 'food' ? 'text-orange-500' : activeTab === 'profile' ? 'text-green-500' : 'text-gray-500'
-          }`}
-        >
-          <User size={24} />
-          {activeTab === 'profile' && <div className={`w-1 h-1 rounded-full mt-1 ${
-            activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
-          }`} />}
-        </button>
-      </nav>
+      {/* MOBILE BOTTOM NAV */}
+      <MobileBottomNav
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        activeMode={activeMode}
+        user={user}
+        loading={loading}
+        onLoginClick={onOpenLogin}
+        accent={accent}
+        setIsCartModalOpen={setIsCartModalOpen}
+        setIsFavoritesModalOpen={setIsFavoritesModalOpen}
+      />
 
       {/* Favorites Modal */}
       <>

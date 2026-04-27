@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { useNavigate } from 'react-router-dom'
 import { UserIcon } from './Icons.jsx'
 
-const ProfileMenu = ({ activeMode }) => {
+const ProfileMenu = ({ activeMode, setIsCartModalOpen, setIsFavoritesModalOpen }) => {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -48,7 +48,12 @@ const ProfileMenu = ({ activeMode }) => {
   }
 
   const handleFavorites = () => {
-    // TODO: Navigate to favorites
+    setIsFavoritesModalOpen(true)
+    setIsDropdownOpen(false)
+  }
+
+  const handleCart = () => {
+    setIsCartModalOpen(true)
     setIsDropdownOpen(false)
   }
 
@@ -170,6 +175,24 @@ const ProfileMenu = ({ activeMode }) => {
               <div>
                 <p className="font-medium">Favorites</p>
                 <p className="text-xs text-gray-500">Your saved items</p>
+              </div>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleCart}
+              className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors group"
+            >
+              <div className={`w-8 h-8 ${accent.bgLight} rounded-lg flex items-center justify-center group-hover:${accent.bg} transition-colors`}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={accent.text}>
+                  <circle cx="9" cy="21" r="1"/>
+                  <circle cx="20" cy="21" r="1"/>
+                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                </svg>
+              </div>
+              <div>
+                <p className="font-medium">Cart</p>
+                <p className="text-xs text-gray-500">View your cart items</p>
               </div>
             </button>
 

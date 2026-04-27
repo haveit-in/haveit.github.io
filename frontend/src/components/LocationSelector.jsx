@@ -243,12 +243,11 @@ export default function LocationSelector({ isMobile = false, isHeader = false, a
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-        className={`group flex items-center gap-2 text-left w-full rounded-full border ${accent.border} ${accent.bgLight} px-3 py-2 hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} focus:outline-none focus:ring-0 ${accent.locationFocus}`}
+        className={`group flex items-center gap-1 text-left w-fit max-w-[160px] rounded-full border ${accent.border} ${accent.bgLight} px-2 py-1.5 hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} focus:outline-none focus:ring-0 ${accent.locationFocus}`}
         aria-label="Select delivery location"
       >
-        <LocationIcon size={18} className={`${accent.icon} flex-shrink-0`} />
+        <LocationIcon size={16} className={`${accent.icon} flex-shrink-0`} />
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-gray-500">Location</p>
           <p className="text-sm font-medium text-gray-900 flex items-center gap-1">
             <span className="relative block truncate max-w-full">
               <span className="truncate block">{truncatedDisplayText}</span>
@@ -258,7 +257,7 @@ export default function LocationSelector({ isMobile = false, isHeader = false, a
                 </span>
               )}
             </span>
-            <ChevronDownIcon size={10} className="flex-shrink-0" />
+            <ChevronDownIcon size={8} className="flex-shrink-0" />
           </p>
         </div>
       </button>
