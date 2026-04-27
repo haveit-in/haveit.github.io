@@ -90,13 +90,13 @@ export default function SignIn() {
               {submitting ? 'Logging in…' : 'Log in'}
             </button>
 
-            <div className="finePrint">
+            {/* <div className="finePrint">
               New here?{' '}
               <Link className="linkBlue" to="/signup">
                 Create an account
               </Link>
               .
-            </div>
+            </div> */}
           </form>
         </section>
       </div>

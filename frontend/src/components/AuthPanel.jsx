@@ -26,6 +26,33 @@ export default function AuthPanel({ open, mode, onClose, onModeChange, activeMod
         </button>
 
         <div className="authPanelBody">
+          {/* Header - only show for login */}
+          {isLogin && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
+              
+              {/* Company Logo */}
+              <img 
+                src="/image/22.png" 
+                alt="HaveIt"
+                style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '12px',
+                  objectFit: 'cover'
+                }}
+              />
+
+              <div>
+                <h2 style={{ margin: 0, fontSize: '24px', fontWeight: '700', color: '#1c1917' }}>
+                  Welcome Back
+                </h2>
+                <p style={{ margin: '4px 0 0', color: '#6b7280', fontSize: '14px' }}>
+                  Sign in to continue to your account
+                </p>
+              </div>
+            </div>
+          )}
+
           {isLogin ? (
             <AuthLogin onSuccess={onClose} onOpenSignup={() => onModeChange('signup')} activeMode={activeMode} />
           ) : (
