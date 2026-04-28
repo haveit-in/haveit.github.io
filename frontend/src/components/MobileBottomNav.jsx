@@ -7,9 +7,11 @@ import {
   Heart,
   Briefcase,
   Search,
+  User,
 } from 'lucide-react'
 import SearchBar from './SearchBar.jsx'
 import { useApp } from '../context/useApp.js'
+import { useAuth } from '../context/AuthContext.jsx'
 
 // Search data
 const searchData = [
@@ -59,10 +61,13 @@ export default function MobileBottomNav({
 }) {
   const navigate = useNavigate()
   const { setSearchQuery: setAppSearchQuery } = useApp()
+  const { logout } = useAuth()
   const [showSearchModal, setShowSearchModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false)
   const searchInputRef = useRef(null)
+  const profileDropdownRef = useRef(null)
   const debounceTimerRef = useRef(null)
 
   // Initialize Fuse
@@ -127,6 +132,62 @@ export default function MobileBottomNav({
       }
     };
   }, []);
+
+  // Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileDropdownRef.current && !profileDropdownRef.current.contains(event.target)) {
+        setShowProfileDropdown(false)
+        setActiveTab('home')
+      }
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Reset to home tab when profile dropdown closes
+  useEffect(() => {
+    if (!showProfileDropdown && activeTab === 'profile') {
+      setActiveTab('home')
+    }
+  }, [showProfileDropdown, activeTab])
+
+  // Handle profile actions
+  const handleProfileClick = () => {
+    if (!loading && user) {
+      if (!showProfileDropdown) {
+        setActiveTab('profile')
+      }
+      setShowProfileDropdown(!showProfileDropdown)
+    } else {
+      onLoginClick()
+    }
+  }
+
+  const handleMyProfile = () => {
+    navigate('/profile')
+    setShowProfileDropdown(false)
+    setActiveTab('home')
+  }
+
+  const handleFavorites = () => {
+    setIsFavoritesModalOpen(true)
+    setShowProfileDropdown(false)
+    setActiveTab('home')
+  }
+
+  const handleCart = () => {
+    setIsCartModalOpen(true)
+    setShowProfileDropdown(false)
+    setActiveTab('home')
+  }
+
+  const handleLogout = () => {
+    logout()
+    setShowProfileDropdown(false)
+    setActiveTab('home')
+  }
   return (
     <>
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex justify-around items-center h-20 z-40">
@@ -145,74 +206,213 @@ export default function MobileBottomNav({
       <button
         type="button"
         onClick={() => {
-          setActiveTab('search')
+          setActiveTab('home')
           setShowSearchModal(true)
         }}
-        className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-          activeTab === 'search' && activeMode === 'food' ? 'text-orange-500' : activeTab === 'search' ? 'text-green-500' : 'text-gray-500'
-        }`}
+        className="flex flex-col items-center justify-center flex-1 h-full transition-colors text-gray-500"
       >
         <Search size={24} />
-        {activeTab === 'search' && <div className={`w-1 h-1 rounded-full mt-1 ${
-          activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
-        }`} />}
-      </button>
-      <button
-        type="button"
-        onClick={() => navigate('/partner')}
-        className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-          activeMode === 'food' ? 'text-orange-500' : 'text-green-500'
-        }`}
-      >
-        <Briefcase size={24} />
-        <span className={`text-xs mt-1 font-medium ${
-          activeMode === 'food' ? 'text-orange-500' : 'text-green-500'
-        }`}>Partner</span>
       </button>
       <button
         type="button"
         onClick={() => {
+          setActiveTab('home')
+          navigate('/partner')
+        }}
+        className="flex flex-col items-center justify-center flex-1 h-full transition-colors text-gray-500"
+      >
+        <Briefcase size={24} />
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          setActiveTab('home')
           if (!loading && user) {
-            setActiveTab('saved')
             setIsFavoritesModalOpen(true)
           } else {
             onLoginClick()
           }
         }}
-        className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
-          activeTab === 'saved'
-            ? (activeMode === 'food' ? 'text-orange-500' : 'text-green-500')
-            : 'text-gray-500'
-        }`}
+        className="flex flex-col items-center justify-center flex-1 h-full transition-colors text-gray-500"
       >
         <Heart size={24} />
-        {activeTab === 'saved' && <div className={`w-1 h-1 rounded-full mt-1 ${
-          activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
-        }`} />}
       </button>
+      <div className="relative" ref={profileDropdownRef}>
+        <button
+          type="button"
+          onClick={handleProfileClick}
+          className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+            activeTab === 'profile'
+              ? (activeMode === 'food' ? 'text-orange-500' : 'text-green-500')
+              : 'text-gray-500'
+          }`}
+        >
+          {!loading && user ? (
+            user.photo_url ? (
+              <img 
+                src={user.photo_url} 
+                alt={user.name || 'Profile'} 
+                className="w-6 h-6 rounded-full object-cover"
+              />
+            ) : (
+              <div className={`w-6 h-6 ${activeMode === 'food' ? 'bg-orange-500' : 'bg-green-600'} text-white rounded-full flex items-center justify-center`}>
+                <User size={14} />
+              </div>
+            )
+          ) : (
+            <User size={24} />
+          )}
+          {activeTab === 'profile' && <div className={`w-1 h-1 rounded-full mt-1 ${
+            activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
+          }`} />}
+        </button>
+
+        {/* Profile Dropdown */}
+        {showProfileDropdown && user && (
+          <div className="absolute bottom-full right-0 mb-2 w-72 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-[60] overflow-hidden">
+            {/* User Info Header */}
+            <div className={`px-4 py-4 ${activeMode === 'food' ? 'bg-orange-500' : 'bg-green-600'} bg-gradient-to-br`}>
+              <div className="flex items-center gap-3">
+                {/* Avatar */}
+                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center overflow-hidden ring-2 ring-white/30">
+                  {user.photo_url ? (
+                    <img 
+                      src={user.photo_url} 
+                      alt={user.name || 'Profile'} 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User size={20} className="text-white" />
+                  )}
+                </div>
+                
+                {/* User Details */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-white truncate">
+                    {user.name || 'User'}
+                  </p>
+                  <p className="text-xs text-white/80 truncate">
+                    {user.email || 'user@example.com'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Menu Items */}
+            <div className="py-2">
+              <button
+                type="button"
+                onClick={handleMyProfile}
+                className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors"
+              >
+                <div className={`w-8 h-8 ${activeMode === 'food' ? 'bg-orange-50' : 'bg-green-50'} rounded-lg flex items-center justify-center`}>
+                  <User size={16} className={activeMode === 'food' ? 'text-orange-500' : 'text-green-600'} />
+                </div>
+                <div>
+                  <p className="font-medium">My Profile</p>
+                  <p className="text-xs text-gray-500">View and edit your information</p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleFavorites}
+                className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors"
+              >
+                <div className={`w-8 h-8 ${activeMode === 'food' ? 'bg-orange-50' : 'bg-green-50'} rounded-lg flex items-center justify-center`}>
+                  <Heart size={16} className={activeMode === 'food' ? 'text-orange-500' : 'text-green-600'} />
+                </div>
+                <div>
+                  <p className="font-medium">Favorites</p>
+                  <p className="text-xs text-gray-500">Your saved items</p>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleCart}
+                className="w-full text-left px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition-colors"
+              >
+                <div className={`w-8 h-8 ${activeMode === 'food' ? 'bg-orange-50' : 'bg-green-50'} rounded-lg flex items-center justify-center`}>
+                  <ShoppingBag size={16} className={activeMode === 'food' ? 'text-orange-500' : 'text-green-600'} />
+                </div>
+                <div>
+                  <p className="font-medium">Cart</p>
+                  <p className="text-xs text-gray-500">View your cart items</p>
+                </div>
+              </button>
+
+              <div className="border-t border-gray-100 my-1"></div>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="w-full text-left px-4 py-3 text-sm text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors"
+              >
+                <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-red-600">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    <polyline points="16,17 21,12 16,7" />
+                    <line x1="21" y1="12" x2="9" y2="12" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-medium">Log Out</p>
+                  <p className="text-xs text-gray-500">Sign out of your account</p>
+                </div>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
     </nav>
     
     {/* Search Modal */}
-    {showSearchModal && (
-      <div className="md:hidden fixed inset-0 bg-white z-50 flex flex-col">
-        {/* Search Header */}
-        <div className="flex items-center gap-3 p-4 border-b border-gray-100">
-          <button
-            type="button"
-            onClick={() => {
-              setShowSearchModal(false)
-              setActiveTab('home')
-              setSearchQuery('')
-              setSearchResults([])
-            }}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 6 6 18" />
-              <path d="m6 6 12 12" />
-            </svg>
-          </button>
-          <div className="flex-1 relative">
+    <>
+      <div
+        className={`authOverlay ${showSearchModal ? 'authOverlayOpen' : ''}`}
+        onClick={() => {
+          setShowSearchModal(false)
+          setActiveTab('home')
+          setSearchQuery('')
+          setSearchResults([])
+        }}
+        aria-hidden={showSearchModal ? undefined : true}
+      />
+
+      <aside
+        className={`authPanel ${showSearchModal ? 'authPanelOpen' : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Search"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="authPanelHandle" aria-hidden="true" />
+
+        <div className="authPanelBody">
+          {/* Header with X button */}
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900"></h2>
+            <button
+              type="button"
+              className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+              onClick={() => {
+                setShowSearchModal(false)
+                setActiveTab('home')
+                setSearchQuery('')
+                setSearchResults([])
+              }}
+              aria-label="Close search"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-600">
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
+          </div>
+
+          {/* Search Input */}
+          <div className="mb-4">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <Search size={18} className="text-gray-400" />
@@ -232,76 +432,76 @@ export default function MobileBottomNav({
               />
             </div>
           </div>
-        </div>
-        
-        {/* Search Content Area */}
-        <div className="flex-1 overflow-y-auto p-4 bg-white">
-          {!searchQuery ? (
-            <div className="text-center text-gray-500 mt-8">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mx-auto mb-4 text-gray-300">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="m21 21-4.35-4.35"/>
-              </svg>
-              <p className="text-sm">Start typing to search</p>
-              <p className="text-xs text-gray-400 mt-1">
-                {activeMode === 'food' 
-                  ? 'Find your favorite food and restaurants' 
-                  : 'Discover fresh groceries and essentials'
-                }
-              </p>
-            </div>
-          ) : searchResults.length > 0 ? (
-            <div className="space-y-4">
-              {searchResults.map((result) => (
-                <button
-                  key={result.item.id}
-                  onClick={() => handleSelectResult(result)}
-                  className="w-full bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors"
-                >
-                  {result.item.image && (
-                    <img 
-                      src={result.item.image} 
-                      alt={result.item.name}
-                      className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-                    />
-                  )}
-                  {!result.item.image && (
-                    <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-                      <span className="text-gray-400 text-sm">
-                        {result.item.type?.[0] || '?'}
-                      </span>
+          
+          {/* Search Content Area */}
+          <div className="flex-1 overflow-y-auto">
+            {!searchQuery ? (
+              <div className="text-center text-gray-500 mt-8">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mx-auto mb-4 text-gray-300">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <p className="text-sm">Start typing to search</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {activeMode === 'food' 
+                    ? 'Find your favorite food and restaurants' 
+                    : 'Discover fresh groceries and essentials'
+                  }
+                </p>
+              </div>
+            ) : searchResults.length > 0 ? (
+              <div className="space-y-4">
+                {searchResults.map((result) => (
+                  <button
+                    key={result.item.id}
+                    onClick={() => handleSelectResult(result)}
+                    className="w-full bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3 hover:bg-gray-50 transition-colors"
+                  >
+                    {result.item.image && (
+                      <img 
+                        src={result.item.image} 
+                        alt={result.item.name}
+                        className="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+                      />
+                    )}
+                    {!result.item.image && (
+                      <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
+                        <span className="text-gray-400 text-sm">
+                          {result.item.type?.[0] || '?'}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0 text-left">
+                      <p className="text-sm font-medium text-gray-900 truncate">
+                        {result.item.name}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {result.item.type}
+                        {result.item.price && ` • ₹${result.item.price}`}
+                        {result.item.rating && ` • ★${result.item.rating}`}
+                      </p>
                     </div>
-                  )}
-                  <div className="flex-1 min-w-0 text-left">
-                    <p className="text-sm font-medium text-gray-900 truncate">
-                      {result.item.name}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {result.item.type}
-                      {result.item.price && ` • ₹${result.item.price}`}
-                      {result.item.rating && ` • ★${result.item.rating}`}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center text-gray-500 mt-8">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mx-auto mb-4 text-gray-300">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="m21 21-4.35-4.35"/>
-              </svg>
-              <p className="text-sm">
-                No results for <span className="font-medium text-gray-900">"{searchQuery}"</span>
-              </p>
-              <p className="text-xs text-gray-400 mt-1">
-                Try searching for dishes, restaurants, or groceries
-              </p>
-            </div>
-          )}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center text-gray-500 mt-8">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="mx-auto mb-4 text-gray-300">
+                  <circle cx="11" cy="11" r="8"/>
+                  <path d="m21 21-4.35-4.35"/>
+                </svg>
+                <p className="text-sm">
+                  No results for <span className="font-medium text-gray-900">"{searchQuery}"</span>
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Try searching for dishes, restaurants, or groceries
+                </p>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    )}
+      </aside>
+    </>
     </>
   )
 }
