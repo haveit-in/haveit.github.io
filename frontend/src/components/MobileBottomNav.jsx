@@ -194,12 +194,12 @@ export default function MobileBottomNav({
       <button
         type="button"
         onClick={() => setActiveTab('home')}
-        className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+        className={`flex flex-col items-center justify-center flex-1 h-full transition-colors relative ${
           activeTab === 'home' && activeMode === 'food' ? 'text-orange-500' : activeTab === 'home' ? 'text-green-500' : 'text-gray-500'
         }`}
       >
-        <House size={24} />
-        {activeTab === 'home' && <div className={`w-1 h-1 rounded-full mt-1 ${
+        <House size={24} strokeWidth={2} />
+        {activeTab === 'home' && <div className={`w-1 h-1 rounded-full mt-1 absolute bottom-2 ${
           activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
         }`} />}
       </button>
@@ -209,9 +209,9 @@ export default function MobileBottomNav({
           setActiveTab('home')
           setShowSearchModal(true)
         }}
-        className="flex flex-col items-center justify-center flex-1 h-full transition-colors text-gray-500"
+        className="flex flex-col items-center justify-center flex-1 h-full transition-colors text-gray-500 relative"
       >
-        <Search size={24} />
+        <Search size={24} strokeWidth={2} />
       </button>
       <button
         type="button"
@@ -219,9 +219,9 @@ export default function MobileBottomNav({
           setActiveTab('home')
           navigate('/partner')
         }}
-        className="flex flex-col items-center justify-center flex-1 h-full transition-colors text-gray-500"
+        className="flex flex-col items-center justify-center flex-1 h-full transition-colors text-gray-500 relative"
       >
-        <Briefcase size={24} />
+        <Briefcase size={24} strokeWidth={2} />
       </button>
       <button
         type="button"
@@ -233,15 +233,15 @@ export default function MobileBottomNav({
             onLoginClick()
           }
         }}
-        className="flex flex-col items-center justify-center flex-1 h-full transition-colors text-gray-500"
+        className="flex flex-col items-center justify-center flex-1 h-full transition-colors text-gray-500 relative"
       >
-        <Heart size={24} />
+        <Heart size={24} strokeWidth={2} />
       </button>
-      <div className="relative" ref={profileDropdownRef}>
+      <div className="relative flex-1" ref={profileDropdownRef}>
         <button
           type="button"
           onClick={handleProfileClick}
-          className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+          className={`flex flex-col items-center justify-center w-full h-full transition-colors relative ${
             activeTab === 'profile'
               ? (activeMode === 'food' ? 'text-orange-500' : 'text-green-500')
               : 'text-gray-500'
@@ -252,17 +252,17 @@ export default function MobileBottomNav({
               <img 
                 src={user.photo_url} 
                 alt={user.name || 'Profile'} 
-                className="w-6 h-6 rounded-full object-cover"
+                className="w-6 h-6 rounded-full object-cover ring-1 ring-gray-200"
               />
             ) : (
-              <div className={`w-6 h-6 ${activeMode === 'food' ? 'bg-orange-500' : 'bg-green-600'} text-white rounded-full flex items-center justify-center`}>
-                <User size={14} />
+              <div className={`w-6 h-6 ${activeMode === 'food' ? 'bg-orange-500' : 'bg-green-600'} text-white rounded-full flex items-center justify-center ring-1 ring-gray-200`}>
+                <User size={14} strokeWidth={2} />
               </div>
             )
           ) : (
-            <User size={24} />
+            <User size={24} strokeWidth={2} />
           )}
-          {activeTab === 'profile' && <div className={`w-1 h-1 rounded-full mt-1 ${
+          {activeTab === 'profile' && <div className={`w-1 h-1 rounded-full mt-1 absolute bottom-2 ${
             activeMode === 'food' ? 'bg-orange-500' : 'bg-green-500'
           }`} />}
         </button>
