@@ -94,7 +94,7 @@ export default function PartnerLogin() {
 
           <p className="text-center text-sm text-gray-600 mt-6">
             New here?{" "}
-            <Link to="/register" className="text-orange-600 hover:text-orange-700 font-medium">
+            <Link to="/partner/register" className="text-orange-600 hover:text-orange-700 font-medium">
               Register your restaurant
             </Link>
           </p>

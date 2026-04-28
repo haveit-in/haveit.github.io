@@ -46,7 +46,7 @@ export default function PartnerLanding() {
                 Login
               </Link>
               <Link
-                to="/register"
+                to="/partner/register"
                 className="px-8 py-3 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:shadow-lg transition-all text-center"
               >
                 Register Your Restaurant
