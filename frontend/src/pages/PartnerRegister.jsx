@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router";
 import { Store, Check, AlertCircle } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const steps = [
   { id: 1, name: "Basic Details" },
@@ -28,6 +29,64 @@ export function RegistrationPage() {
   const [errors, setErrors] = useState({});
   const navigate = useNavigate();
 
+  // Clear form data on successful submission
+  const clearFormData = () => {
+    localStorage.removeItem("partnerFormData");
+  };
+
+  // Auto-save draft functionality
+  useEffect(() => {
+    try {
+      const dataToSave = {
+        ...formData,
+        currentStep,
+        timestamp: Date.now()
+      };
+      localStorage.setItem("partnerFormData", JSON.stringify(dataToSave));
+    } catch (error) {
+      console.log("Error saving form data:", error);
+    }
+  }, [formData, currentStep]);
+
+  // Restore on reload
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("partnerFormData");
+      if (saved) {
+        const parsedData = JSON.parse(saved);
+        
+        // Only restore if data is recent (within 24 hours)
+        const isRecent = (Date.now() - parsedData.timestamp) < 24 * 60 * 60 * 1000;
+        
+        if (isRecent) {
+          // Restore form data
+          setFormData({
+            restaurantName: parsedData.restaurantName || "",
+            ownerName: parsedData.ownerName || "",
+            email: parsedData.email || "",
+            phone: parsedData.phone || "",
+            address: parsedData.address || "",
+            city: parsedData.city || "",
+            cuisine: parsedData.cuisine || [],
+            fssai: parsedData.fssai || "",
+            accountNumber: parsedData.accountNumber || "",
+            ifsc: parsedData.ifsc || "",
+            accountHolder: parsedData.accountHolder || "",
+          });
+          
+          // Restore current step if valid
+          if (parsedData.currentStep && parsedData.currentStep >= 1 && parsedData.currentStep <= 5) {
+            setCurrentStep(parsedData.currentStep);
+          }
+        }
+      }
+    } catch (error) {
+      console.log("Error restoring form data:", error);
+      // Clear corrupted data
+      localStorage.removeItem("partnerFormData");
+    }
+  }, []);
+
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -41,6 +100,12 @@ export function RegistrationPage() {
   const validateIFSC = (ifsc) => {
     const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
     return ifscRegex.test(ifsc.toUpperCase());
+  };
+
+  const validateAccountNumber = (accountNumber) => {
+    // Account number should be 9-18 digits
+    const accountRegex = /^\d{9,18}$/;
+    return accountRegex.test(accountNumber.replace(/\s/g, ''));
   };
 
   const validateStep = (step) => {
@@ -83,6 +148,8 @@ export function RegistrationPage() {
     if (step === 4) {
       if (!formData.accountNumber.trim()) {
         newErrors.accountNumber = "Account number is required";
+      } else if (!validateAccountNumber(formData.accountNumber)) {
+        newErrors.accountNumber = "Account number should be 9-18 digits";
       }
       if (!formData.ifsc.trim()) {
         newErrors.ifsc = "IFSC code is required";
@@ -103,6 +170,8 @@ export function RegistrationPage() {
       if (currentStep < 5) {
         setCurrentStep(currentStep + 1);
       } else {
+        // Clear form data on successful submission
+        clearFormData();
         navigate("/pending");
       }
     }
@@ -115,58 +184,128 @@ export function RegistrationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white p-4">
-      <div className="max-w-3xl mx-auto py-8">
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
-              <Store className="w-6 h-6 text-white" />
+    <div className="h-screen bg-gradient-to-br from-gray-50 to-orange-50 overflow-hidden">
+      {/* Sticky Header + Stepper */}
+      <div className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          
+          {/* Header */}
+          <div className="flex items-center justify-center gap-2 mb-3 md:hidden">
+            <div className="w-9 h-9 bg-orange-500 rounded-lg flex items-center justify-center">
+              <Store className="w-5 h-5 text-white" />
             </div>
-            <span className="text-2xl font-semibold">HaveIt Partner</span>
-          </Link>
-          <h1 className="text-3xl font-bold mb-2">Register Your Restaurant</h1>
-          <p className="text-gray-600">Complete the steps below to get started</p>
-        </div>
+            <span className="text-lg font-semibold">HaveIt Partner</span>
+          </div>
 
-        <div className="mb-8">
-          <div className="flex items-center justify-between">
-            {steps.map((step, index) => (
-              <div key={step.id} className="flex items-center flex-1">
-                <div className="flex flex-col items-center flex-1">
+          {/* Mobile Progress */}
+          <div className="md:hidden">
+            <div className="flex justify-between text-xs text-gray-600 mb-1">
+              <span>Step {currentStep} of {steps.length}</span>
+              <span>{steps[currentStep - 1].name}</span>
+            </div>
+            <div className="w-full h-1 bg-gray-200 rounded-full">
+              <div
+                className="h-1 bg-orange-600 rounded-full transition-all"
+                style={{ width: `${(currentStep / steps.length) * 100}%` }}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Split Layout */}
+      <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8 h-full px-4">
+        
+        {/* Left Panel - Branding + Vertical Stepper (Sticky) */}
+        <div className="hidden md:flex flex-col h-full sticky top-0 py-10">
+          
+          {/* Logo */}
+          <div>
+            <div className="flex items-center gap-2 mb-10">
+              <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                <Store className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-xl font-semibold">HaveIt Partner</span>
+            </div>
+
+            {/* Stepper */}
+            <div className="space-y-8">
+              {steps.map((step, index) => (
+                <div key={step.id} className="flex items-start gap-4 relative">
+                  
+                  {/* Vertical Line */}
+                  {index !== steps.length - 1 && (
+                    <div className="absolute left-[15px] top-8 h-full w-[2px] bg-gray-200"></div>
+                  )}
+
+                  {/* Active Progress Line */}
+                  {index !== steps.length - 1 && currentStep > step.id && (
+                    <div className="absolute left-[15px] top-8 h-full w-[2px] bg-orange-600"></div>
+                  )}
+
+                  {/* Circle */}
                   <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
+                    className={`w-8 h-8 flex items-center justify-center rounded-full border-2 z-10 bg-white
+                    ${
                       currentStep > step.id
                         ? "bg-orange-600 border-orange-600 text-white"
                         : currentStep === step.id
-                        ? "border-orange-600 text-orange-600 bg-white"
-                        : "border-gray-300 text-gray-400 bg-white"
+                        ? "border-orange-600 text-orange-600 ring-4 ring-orange-100"
+                        : "border-gray-300 text-gray-400"
                     }`}
                   >
-                    {currentStep > step.id ? <Check className="w-5 h-5" /> : step.id}
+                    {currentStep > step.id ? <Check className="w-4 h-4" /> : step.id}
                   </div>
-                  <p
-                    className={`text-xs mt-2 text-center ${
-                      currentStep >= step.id ? "text-gray-900" : "text-gray-400"
-                    }`}
-                  >
-                    {step.name}
-                  </p>
+
+                  {/* Content */}
+                  <div className="pt-1">
+                    <p
+                      className={`text-sm font-medium ${
+                        currentStep >= step.id ? "text-gray-900" : "text-gray-400"
+                      }`}
+                    >
+                      {step.name}
+                    </p>
+
+                    {currentStep === step.id && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Fill required details
+                      </p>
+                    )}
+                  </div>
                 </div>
-                {index < steps.length - 1 && (
-                  <div
-                    className={`h-0.5 flex-1 -mt-6 ${
-                      currentStep > step.id ? "bg-orange-600" : "bg-gray-300"
-                    }`}
-                  />
-                )}
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+
+          {/* Bottom fixed content */}
+          <div className="mt-auto text-sm text-gray-500">
+            Need help? Contact support
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+        {/* Right Panel - Form Area (Scrollable) */}
+        <div className="md:col-span-2 h-full overflow-y-auto py-10 pr-2">
+          
+          <h1 className="text-3xl font-bold mb-2">
+            Register Your Restaurant
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Complete the steps below to get started
+          </p>
+
+          <div className="bg-white rounded-2xl shadow-xl p-10 border mb-20">
+
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentStep}
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -40 }}
+              transition={{ duration: 0.25 }}
+            >
           {currentStep === 1 && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <h2 className="text-xl font-semibold mb-4">Basic Details</h2>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Restaurant Name</label>
@@ -180,7 +319,7 @@ export function RegistrationPage() {
                     }
                   }}
                   placeholder="Enter restaurant name"
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-200 focus:scale-[1.01] ${
                     errors.restaurantName ? "border-red-500" : "border-gray-200"
                   }`}
                 />
@@ -203,7 +342,7 @@ export function RegistrationPage() {
                     }
                   }}
                   placeholder="Enter owner name"
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-200 focus:scale-[1.01] ${
                     errors.ownerName ? "border-red-500" : "border-gray-200"
                   }`}
                 />
@@ -226,7 +365,7 @@ export function RegistrationPage() {
                     }
                   }}
                   placeholder="restaurant@example.com"
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-200 focus:scale-[1.01] ${
                     errors.email ? "border-red-500" : "border-gray-200"
                   }`}
                 />
@@ -249,7 +388,7 @@ export function RegistrationPage() {
                     }
                   }}
                   placeholder="+91 98765 43210"
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-200 focus:scale-[1.01] ${
                     errors.phone ? "border-red-500" : "border-gray-200"
                   }`}
                 />
@@ -264,7 +403,7 @@ export function RegistrationPage() {
           )}
 
           {currentStep === 2 && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <h2 className="text-xl font-semibold mb-4">Restaurant Information</h2>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
@@ -278,7 +417,7 @@ export function RegistrationPage() {
                   }}
                   placeholder="Enter complete address"
                   rows={3}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-200 focus:scale-[1.01] ${
                     errors.address ? "border-red-500" : "border-gray-200"
                   }`}
                 />
@@ -301,7 +440,7 @@ export function RegistrationPage() {
                     }
                   }}
                   placeholder="Enter city"
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-200 focus:scale-[1.01] ${
                     errors.city ? "border-red-500" : "border-gray-200"
                   }`}
                 />
@@ -355,7 +494,7 @@ export function RegistrationPage() {
                     }
                   }}
                   placeholder="Enter FSSAI license number"
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-200 focus:scale-[1.01] ${
                     errors.fssai ? "border-red-500" : "border-gray-200"
                   }`}
                 />
@@ -370,7 +509,7 @@ export function RegistrationPage() {
           )}
 
           {currentStep === 3 && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <h2 className="text-xl font-semibold mb-4">Upload Documents</h2>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Restaurant Images</label>
@@ -390,7 +529,7 @@ export function RegistrationPage() {
           )}
 
           {currentStep === 4 && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <h2 className="text-xl font-semibold mb-4">Bank Details</h2>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Account Number</label>
@@ -398,13 +537,18 @@ export function RegistrationPage() {
                   type="text"
                   value={formData.accountNumber}
                   onChange={(e) => {
-                    setFormData({ ...formData, accountNumber: e.target.value });
-                    if (errors.accountNumber) {
+                    const value = e.target.value;
+                    setFormData({ ...formData, accountNumber: value });
+                    
+                    // Real-time validation
+                    if (value.trim() && !validateAccountNumber(value)) {
+                      setErrors({ ...errors, accountNumber: "Account number should be 9-18 digits" });
+                    } else if (errors.accountNumber) {
                       setErrors({ ...errors, accountNumber: "" });
                     }
                   }}
                   placeholder="Enter account number"
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-200 focus:scale-[1.01] ${
                     errors.accountNumber ? "border-red-500" : "border-gray-200"
                   }`}
                 />
@@ -427,7 +571,7 @@ export function RegistrationPage() {
                     }
                   }}
                   placeholder="Enter IFSC code (e.g., SBIN0001234)"
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-200 focus:scale-[1.01] ${
                     errors.ifsc ? "border-red-500" : "border-gray-200"
                   }`}
                 />
@@ -450,7 +594,7 @@ export function RegistrationPage() {
                     }
                   }}
                   placeholder="Enter account holder name"
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition duration-200 focus:scale-[1.01] ${
                     errors.accountHolder ? "border-red-500" : "border-gray-200"
                   }`}
                 />
@@ -465,7 +609,7 @@ export function RegistrationPage() {
           )}
 
           {currentStep === 5 && (
-            <div className="space-y-4">
+            <div className="space-y-6">
               <h2 className="text-xl font-semibold mb-4">Review & Submit</h2>
               <div className="bg-gray-50 rounded-lg p-6 space-y-4">
                 <div>
@@ -508,26 +652,33 @@ export function RegistrationPage() {
               </div>
             </div>
           )}
+            </motion.div>
+          </AnimatePresence>
+          </div>
 
-          <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200">
-            {currentStep > 1 ? (
+          {/* Sticky Bottom CTA */}
+          <div className="sticky bottom-0 bg-white border-t p-4">
+            <div className="flex justify-end gap-3">
+              {currentStep > 1 ? (
+                <button
+                  onClick={handleBack}
+                  className="px-6 py-3 border rounded-lg"
+                >
+                  Back
+                </button>
+              ) : (
+                <Link to="/" className="px-6 py-3 border rounded-lg text-center">
+                  Cancel
+                </Link>
+              )}
+
               <button
-                onClick={handleBack}
-                className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                onClick={handleNext}
+                className="px-6 py-3 bg-orange-600 text-white rounded-lg shadow-md"
               >
-                Back
+                {currentStep === 5 ? "Submit" : "Continue"}
               </button>
-            ) : (
-              <Link to="/" className="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                Cancel
-              </Link>
-            )}
-            <button
-              onClick={handleNext}
-              className="px-6 py-2 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg hover:shadow-lg transition-all"
-            >
-              {currentStep === 5 ? "Submit Application" : "Continue"}
-            </button>
+            </div>
           </div>
         </div>
       </div>
