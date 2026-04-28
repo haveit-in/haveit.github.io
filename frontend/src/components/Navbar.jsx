@@ -81,9 +81,24 @@ export default function Navbar({
             <span className={`text-xl font-bold ${accent.icon}`}>Haveit</span>
           </div>
 
-          {/* Location RIGHT */}
-          <div className="ml-auto flex justify-end">
+          {/* Location & Profile */}
+          <div className="ml-auto flex items-center gap-3">
             <LocationSelector isMobile accent={accent} activeMode={activeMode} />
+            {!loading && user ? (
+              <ProfileMenu 
+                activeMode={activeMode} 
+                setIsCartModalOpen={setIsCartModalOpen}
+                setIsFavoritesModalOpen={setIsFavoritesModalOpen}
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={onLoginClick}
+                className={`h-8 px-3 rounded-full text-xs font-medium ${accent.icon} border border-gray-300 ${accent.bgLight} hover:border-${activeMode === 'food' ? 'orange-500' : 'green-600'} hover:bg-opacity-80 transition-colors`}
+              >
+                Login
+              </button>
+            )}
           </div>
 
         </div>
