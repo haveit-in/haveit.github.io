@@ -52,5 +52,14 @@ if not firebase_admin._apps:
         raise
 
 def verify_firebase_token(id_token: str):
-    decoded_token = auth.verify_id_token(id_token)
-    return decoded_token
+    try:
+        # Check if Firebase Admin SDK is initialized
+        if not firebase_admin._apps:
+            raise Exception("Firebase Admin SDK not initialized")
+        
+        decoded_token = auth.verify_id_token(id_token)
+        return decoded_token
+    except Exception as e:
+        print(f"Token verification error: {str(e)}")
+        print(f"Token preview: {id_token[:50]}..." if len(id_token) > 50 else f"Token: {id_token}")
+        raise
