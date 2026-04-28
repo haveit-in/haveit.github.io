@@ -3,5 +3,5 @@ services:
     name: haveit-official
     rootDir: frontend
     buildCommand: npm install && npm run build
-    startCommand: npm install express && node server.js
+    startCommand: node server.js
     env: node
