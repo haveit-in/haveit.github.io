@@ -1,10 +1,7 @@
 services:
-  - type: static
+  - type: web
     name: haveit-official
     rootDir: frontend
     buildCommand: npm install && npm run build
-    staticPublishPath: .
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
+    startCommand: node server.js
+    env: node
