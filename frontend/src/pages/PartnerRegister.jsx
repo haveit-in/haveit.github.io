@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router";
-import { Store, Upload, ChevronRight, Check, X, Clock, FileText, Image as ImageIcon, Menu as MenuIcon, AlertCircle, CheckCircle2, UploadCloud, Eye, Trash2, RefreshCw } from "lucide-react";
+import { Store, Upload, ChevronRight, Check, X, FileText, Image as ImageIcon, Menu as MenuIcon, AlertCircle, CheckCircle2, UploadCloud, Eye, Trash2, RefreshCw } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext.jsx";
 
@@ -17,10 +17,72 @@ const cuisineOptions = [
   "Healthy", "Seafood", "Mexican", "Thai", "Japanese"
 ];
 
+const buildProfilePayload = (data) => ({
+  restaurant_name: data.restaurantName || null,
+  owner_name: data.ownerName || null,
+  email: data.email || null,
+  phone: data.phone || null,
+  address: data.address || null,
+  city: data.city || null,
+  pincode: data.pincode || null,
+  cuisine_types: data.cuisine?.length ? data.cuisine : null,
+  food_type: data.foodType || null,
+  cost_for_two: data.costForTwo ? Number(data.costForTwo) : null,
+  opening_time: data.workingHours?.openingTime || null,
+  closing_time: data.workingHours?.closingTime || null,
+  fssai_url: data.documents?.fssaiCertificate?.url || null,
+  gst_url: data.documents?.gst?.url || null,
+  pan_url: data.documents?.panCard?.url || null,
+  aadhaar_url: data.documents?.aadhaar?.url || null,
+  restaurant_image: data.documents?.restaurantImages?.urls?.[0] || null,
+  account_holder: data.accountHolder || null,
+  account_number: data.accountNumber || null,
+  ifsc_code: data.ifsc || null,
+  bank_name: data.bankName || null,
+});
+
+const mapProfileToForm = (profile) => ({
+  restaurantName: profile.restaurant_name || "",
+  ownerName: profile.owner_name || "",
+  email: profile.email || "",
+  phone: profile.phone || "",
+  address: profile.address || "",
+  city: profile.city || "",
+  pincode: profile.pincode || "",
+  fssai: profile.fssai || "",
+  documents: {
+    fssaiCertificate: { file: profile.fssai_url ? { name: "FSSAI" } : null, status: profile.fssai_url ? "uploaded" : "pending", url: profile.fssai_url || null },
+    panCard: { file: profile.pan_url ? { name: "PAN" } : null, status: profile.pan_url ? "uploaded" : "pending", url: profile.pan_url || null },
+    bankProof: { file: null, status: "pending", url: null },
+    gst: { file: null, status: profile.gst_url ? "uploaded" : "pending", url: profile.gst_url || null },
+    aadhaar: { file: null, status: profile.aadhaar_url ? "uploaded" : "pending", url: profile.aadhaar_url || null },
+    restaurantImages: {
+      files: profile.restaurant_image ? [{ name: "Restaurant image" }] : [],
+      status: profile.restaurant_image ? "uploaded" : "pending",
+      urls: profile.restaurant_image ? [profile.restaurant_image] : [],
+    },
+    menuUpload: { file: null, status: "pending", url: null },
+  },
+  cuisine: profile.cuisine_types || [],
+  foodType: profile.food_type || "both",
+  costForTwo: profile.cost_for_two != null ? String(profile.cost_for_two) : "",
+  workingHours: {
+    openingTime: profile.opening_time || "",
+    closingTime: profile.closing_time || "",
+  },
+  accountNumber: profile.account_number || "",
+  ifsc: profile.ifsc_code || "",
+  accountHolder: profile.account_holder || "",
+  bankName: profile.bank_name || "",
+  agreeToTerms: false,
+});
+
 export function RegistrationPage() {
-  const { token } = useAuth();
+  const { token, fetchWithAuth } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
-  const [submitted, setSubmitted] = useState(false);
+  const [profileStatus, setProfileStatus] = useState("draft");
+  const [saving, setSaving] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [toast, setToast] = useState(null);
   const navigate = useNavigate();
 
@@ -32,6 +94,7 @@ export function RegistrationPage() {
     phone: "",
     address: "",
     city: "",
+    pincode: "",
     fssai: "",
 
     // Documents
@@ -56,21 +119,68 @@ export function RegistrationPage() {
     accountNumber: "",
     ifsc: "",
     accountHolder: "",
+    bankName: "",
 
     // Terms
     agreeToTerms: false
   });
 
-  // Toast notification helper
   const showToast = (message, type = 'success') => {
     setToast({ message, type });
     setTimeout(() => setToast(null), 3000);
   };
 
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!token) return;
+      try {
+        const response = await fetchWithAuth(`${import.meta.env.VITE_API_BASE_URL}/restaurant/profile`);
+        if (!response.ok) return;
+        const profile = await response.json();
+        setProfileStatus(profile.status || "draft");
+        if (profile.status === "pending") {
+          navigate("/partner/pending-review", { replace: true });
+          return;
+        }
+        if (profile.status === "approved") {
+          navigate("/partner/dashboard", { replace: true });
+          return;
+        }
+        setFormData((prev) => ({ ...prev, ...mapProfileToForm(profile) }));
+      } catch {
+        showToast("Could not load saved draft", "error");
+      }
+    };
+    loadProfile();
+  }, [token, fetchWithAuth, navigate]);
+
+  const saveProfile = async (data) => {
+    if (!token || profileStatus === "pending") return true;
+    setSaving(true);
+    try {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_BASE_URL}/restaurant/profile`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(buildProfilePayload(data)),
+      });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.detail || "Failed to save progress");
+      }
+      return true;
+    } catch (error) {
+      showToast(error.message || "Failed to save progress", "error");
+      return false;
+    } finally {
+      setSaving(false);
+    }
+  };
+
   // Navigation helpers
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < 5) {
-      setCurrentStep(currentStep + 1);
+      const saved = await saveProfile(formData);
+      if (saved) setCurrentStep(currentStep + 1);
     }
   };
 
@@ -185,14 +295,11 @@ export function RegistrationPage() {
   const validateStep = (step) => {
     switch (step) {
       case 1:
-        return formData.restaurantName && formData.ownerName && formData.email &&
-               formData.phone && formData.address && formData.city && formData.fssai;
+        return formData.restaurantName && formData.ownerName &&
+               formData.phone && formData.address;
       case 2:
-        return formData.documents.fssaiCertificate.file &&
-               formData.documents.panCard.file &&
-               formData.documents.bankProof.file &&
-               formData.documents.restaurantImages.files.length > 0 &&
-               formData.documents.menuUpload.file;
+        return formData.documents.fssaiCertificate.url &&
+               formData.documents.panCard.url;
       case 3:
         return formData.cuisine.length > 0 && formData.foodType &&
                formData.costForTwo && formData.workingHours.openingTime &&
@@ -209,63 +316,51 @@ export function RegistrationPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.agreeToTerms) {
+      showToast('Please agree to the Terms of Service and Privacy Policy', 'error');
+      return;
+    }
+
     if (!token) {
       showToast('Please login first', 'error');
       navigate('/partner/login');
       return;
     }
 
+    setSubmitting(true);
     try {
-      console.log('Submitting restaurant application:', formData);
+      const saved = await saveProfile(formData);
+      if (!saved) return;
 
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/restaurant/apply`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_API_BASE_URL}/restaurant/apply`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          restaurant_name: formData.restaurantName,
-          owner_name: formData.ownerName,
-          email: formData.email,
-          phone: formData.phone,
-          address: formData.address,
-          city: formData.city,
-          cuisine: formData.cuisine,
-          fssai: formData.fssai,
-          account_number: formData.accountNumber,
-          ifsc: formData.ifsc,
-          account_holder: formData.accountHolder,
-          food_type: formData.foodType,
-          cost_for_two: formData.costForTwo,
-          opening_time: formData.workingHours.openingTime,
-          closing_time: formData.workingHours.closingTime,
-          fssai_certificate_url: formData.documents.fssaiCertificate.url,
-          pan_card_url: formData.documents.panCard.url,
-          bank_proof_url: formData.documents.bankProof.url,
-          restaurant_images_urls: formData.documents.restaurantImages.urls,
-          menu_url: formData.documents.menuUpload.url,
-        }),
+        headers: { 'Content-Type': 'application/json' },
       });
 
-      const result = await response.json();
+      const result = await response.json().catch(() => ({}));
 
       if (response.ok) {
-        console.log('Application submitted successfully:', result);
         showToast('Application submitted successfully!');
-        setSubmitted(true);
+        localStorage.setItem('partner_status', 'pending');
+        navigate('/partner/pending-review', {
+          replace: true,
+          state: { message: 'Your application has been submitted and is under review.' },
+        });
       } else {
-        console.error('Application submission failed:', result);
-        showToast(result.detail || 'Failed to submit application. Please try again.', 'error');
+        const detail = result.detail;
+        const message = typeof detail === 'object' ? detail.message : detail;
+        showToast(message || result.message || 'Error submitting application', 'error');
       }
     } catch (error) {
       console.error('Error submitting application:', error);
       showToast('Error submitting application. Please check your connection and try again.', 'error');
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  // If submitted, show waiting approval screen
-  if (submitted) {
+  // REMOVED_DEAD_SUBMITTED_BLOCK
+  if (false) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-orange-50 to-white flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-white rounded-2xl shadow-lg p-8 text-center">
@@ -314,7 +409,7 @@ export function RegistrationPage() {
   // Document Upload Card Component
   const DocumentUploadCard = ({ title, docType, icon: Icon, multiple = false, accept }) => {
     const docData = multiple ? formData.documents[docType] : formData.documents[docType];
-    const hasFile = multiple ? docData.files.length > 0 : docData.file;
+    const hasFile = multiple ? docData.files.length > 0 || docData.urls?.length > 0 : !!(docData.file || docData.url);
 
     return (
       <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
@@ -542,7 +637,7 @@ export function RegistrationPage() {
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="max-w-2xl mx-auto p-6 lg:p-12 pb-32">
+          <form id="partner-registration-form" onSubmit={handleSubmit} className="max-w-2xl mx-auto p-6 lg:p-12 pb-32">
             {/* Step 1: Restaurant Details */}
             {currentStep === 1 && (
               <div className="space-y-8">
@@ -1127,15 +1222,18 @@ export function RegistrationPage() {
               ) : (
                 <button
                   type="submit"
-                  disabled={!formData.agreeToTerms}
+                  form="partner-registration-form"
+                  disabled={!formData.agreeToTerms || submitting || saving}
                   className={`flex-1 sm:flex-none px-4 sm:px-8 py-3 sm:py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 text-sm sm:text-base min-w-[140px] ${
-                    formData.agreeToTerms
+                    formData.agreeToTerms && !submitting && !saving
                       ? "bg-orange-600 text-white hover:bg-orange-700 shadow-md hover:shadow-lg"
                       : "bg-gray-200 text-gray-400 cursor-not-allowed"
                   }`}
                 >
-                  <span className="hidden sm:inline">Submit For Review</span>
-                  <span className="sm:hidden">Submit</span>
+                  <span className="hidden sm:inline">
+                    {submitting ? 'Submitting…' : 'Submit For Review'}
+                  </span>
+                  <span className="sm:hidden">{submitting ? '…' : 'Submit'}</span>
                   <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
               )}

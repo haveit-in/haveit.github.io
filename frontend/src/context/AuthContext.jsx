@@ -26,6 +26,8 @@ const clearStoredAuth = () => {
   localStorage.removeItem('user')
   localStorage.removeItem('role')
   localStorage.removeItem('name')
+  localStorage.removeItem('partner_status')
+  localStorage.removeItem('rejection_reason')
 }
 
 export const AuthProvider = ({ children }) => {
@@ -109,16 +111,24 @@ export const AuthProvider = ({ children }) => {
 
       if (result.requiresOnboarding) {
         applyTokens(result)
+        if (result.restaurant_status) {
+          localStorage.setItem('partner_status', result.restaurant_status)
+        }
         return result
       }
 
       if (result.requiresApproval) {
         applyTokens(result)
+        localStorage.setItem('partner_status', result.restaurant_status || 'pending')
         return result
       }
 
       if (result.rejected) {
         applyTokens(result)
+        localStorage.setItem('partner_status', 'rejected')
+        if (result.rejection_reason) {
+          localStorage.setItem('rejection_reason', result.rejection_reason)
+        }
         return result
       }
 
@@ -176,7 +186,7 @@ export const AuthProvider = ({ children }) => {
     getAuthHeaders,
     refreshSession,
     fetchWithAuth,
-    isAuthenticated: !!user && !!token,
+    isAuthenticated: !!token,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

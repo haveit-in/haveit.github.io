@@ -7,7 +7,7 @@ import UserDashboard from './pages/UserDashboard.jsx'
 import PartnerLanding from './pages/PartnerLanding.jsx'
 import PartnerLogin from './pages/PartnerLogin.jsx'
 import PartnerRegister from './pages/PartnerRegister.jsx'
-import PartnerWaitingApproval from './pages/PartnerWaitingApproval.jsx'
+import PartnerPendingReview from './pages/PartnerPendingReview.jsx'
 import PartnerRejected from './pages/PartnerRejected.jsx'
 import AdminRestaurants from './pages/AdminRestaurants.jsx'
 import AdminDashboard from './pages/AdminDashboard.jsx'
@@ -28,6 +28,7 @@ import { AuthProvider } from './context/AuthContext.jsx'
 import { CartProvider } from './context/CartContext.jsx'
 import { ToastProvider } from './context/ToastContext.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
+import PartnerProtectedRoute from './components/PartnerProtectedRoute.jsx'
 import FloatingCartBar from './components/FloatingCartBar.jsx'
 import RestaurantConflictModal from './components/RestaurantConflictModal.jsx'
 import Toast from './components/Toast.jsx'
@@ -149,8 +150,12 @@ function App() {
                 element={<PartnerRegister />}
               />
               <Route
+                path="/partner/pending-review"
+                element={<PartnerPendingReview />}
+              />
+              <Route
                 path="/partner/waiting-approval"
-                element={<PartnerWaitingApproval />}
+                element={<PartnerPendingReview />}
               />
               <Route
                 path="/partner/rejected"
@@ -221,9 +226,9 @@ function App() {
               <Route
                 path="/partner/dashboard"
                 element={
-                  <ProtectedRoute requiredRole="restaurant_owner">
+                  <PartnerProtectedRoute>
                     <DashboardLayout />
-                  </ProtectedRoute>
+                  </PartnerProtectedRoute>
                 }
               >
                 <Route index element={<PartnerDashboard />} />

@@ -24,9 +24,11 @@ export default function PartnerLogin() {
       if (response.requiresOnboarding) {
         navigate("/partner/register");
       } else if (response.requiresApproval) {
-        navigate("/partner/waiting-approval");
+        navigate("/partner/pending-review");
       } else if (response.rejected) {
-        navigate("/partner/rejected");
+        navigate("/partner/rejected", {
+          state: { reason: response.rejection_reason || localStorage.getItem("rejection_reason") },
+        });
       } else {
         // Handle role-based redirect for successful login
         handleLoginRedirect(response);

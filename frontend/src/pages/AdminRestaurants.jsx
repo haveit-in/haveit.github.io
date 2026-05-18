@@ -12,13 +12,14 @@ const AdminRestaurants = () => {
   const [activeTab, setActiveTab] = useState('pending')
   const { getAuthHeaders } = useAuth()
 
-  const fetchRestaurants = useCallback(async () => {
+  const fetchRestaurants = useCallback(async (tab = activeTab) => {
     try {
       setLoading(true)
       // Single API call to get all restaurants
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/restaurants`, {
-        headers: getAuthHeaders()
-      })
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/admin/restaurants?status=${tab}`,
+        { headers: getAuthHeaders() }
+      )
       
       if (!response.ok) {
         throw new Error('Failed to fetch restaurants')
@@ -35,16 +36,16 @@ const AdminRestaurants = () => {
     } finally {
       setLoading(false)
     }
-  }, [getAuthHeaders])
+  }, [getAuthHeaders, activeTab])
 
   useEffect(() => {
-    fetchRestaurants()
-  }, [fetchRestaurants])
+    fetchRestaurants(activeTab)
+  }, [fetchRestaurants, activeTab])
 
   const handleApprove = async (id) => {
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/restaurants/${id}/approve`, {
-        method: 'PATCH',
+        method: 'POST',
         headers: getAuthHeaders()
       })
       if (!response.ok) throw new Error('Failed to approve restaurant')
@@ -62,7 +63,7 @@ const AdminRestaurants = () => {
 
     try {
       const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/admin/restaurants/${rejectModal.id}/reject`, {
-        method: 'PATCH',
+        method: 'POST',
         headers: {
           ...getAuthHeaders(),
           'Content-Type': 'application/json'
@@ -227,7 +228,7 @@ const AdminRestaurants = () => {
                   {/* Date & Actions */}
                   <div className="flex items-center justify-between pt-2 border-t border-slate-100">
                     <div className="text-xs text-slate-500">
-                      {activeTab === 'pending' ? 'Applied' : activeTab === 'approved' ? 'Approved' : 'Rejected'} {new Date(restaurant.created_at).toLocaleDateString('en-US', {
+                      {activeTab === 'pending' ? 'Applied' : activeTab === 'approved' ? 'Approved' : 'Rejected'} {new Date(restaurant.submitted_at || restaurant.created_at).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
                         year: 'numeric',
@@ -312,7 +313,7 @@ const AdminRestaurants = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-slate-600">
-                        {new Date(restaurant.created_at).toLocaleDateString('en-US', {
+                        {new Date(restaurant.submitted_at || restaurant.created_at).toLocaleDateString('en-US', {
                           month: 'short',
                           day: 'numeric',
                           year: 'numeric',

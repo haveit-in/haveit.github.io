@@ -38,6 +38,41 @@ def _login_tokens(db_user: User) -> dict[str, str]:
     return issue_token_pair(str(db_user.id), [db_user.role])
 
 
+def _partner_login_extras(db, user: User) -> dict:
+    """Partner onboarding state from restaurant_profiles.status only."""
+    from app.models.restaurant import RestaurantProfile
+
+    restaurant = (
+        db.query(RestaurantProfile)
+        .filter(RestaurantProfile.user_id == user.id)
+        .first()
+    )
+    if not restaurant:
+        log.info("partner_onboarding_required_no_profile")
+        return {"requiresOnboarding": True}
+
+    status = restaurant.status or "draft"
+    extras: dict = {
+        "restaurant_status": status,
+        "rejection_reason": restaurant.rejection_reason,
+    }
+
+    if status in ("draft",):
+        log.info("partner_onboarding_draft")
+        extras["requiresOnboarding"] = True
+    elif status == "pending":
+        log.info("partner_restaurant_pending")
+        extras["requiresApproval"] = True
+    elif status == "rejected":
+        log.info("partner_restaurant_rejected")
+        extras["rejected"] = True
+    elif status == "approved" and not restaurant.is_active:
+        log.info("partner_restaurant_inactive")
+        extras["requiresApproval"] = True
+
+    return extras
+
+
 if settings.create_tables_on_startup:
     Base.metadata.create_all(bind=engine)
     log.warning(
@@ -186,47 +221,10 @@ def google_login(data: TokenRequest, db: Session = Depends(get_db)):
             db.commit()
             db.refresh(user)
 
-            # If partner, check if restaurant profile exists
             if data.role == "partner":
-                from app.models.restaurant import RestaurantProfile
-                restaurant = db.query(RestaurantProfile).filter(
-                    RestaurantProfile.user_id == user.id
-                ).first()
-                
-                if not restaurant:
-                    log.info("partner_onboarding_required_existing")
-                    return {
-                        "requiresOnboarding": True,
-                        **_login_tokens(user),
-                    }
-
-            # If partner, check restaurant status
-            if data.role == "partner":
-                from app.models.restaurant import RestaurantProfile
-                restaurant = db.query(RestaurantProfile).filter(
-                    RestaurantProfile.user_id == user.id
-                ).first()
-                
-                if restaurant:
-                    if restaurant.status == "pending":
-                        log.info("partner_restaurant_pending")
-                        return {
-                            "requiresApproval": True,
-                            **_login_tokens(user),
-                        }
-                    elif restaurant.status == "rejected":
-                        log.info("partner_restaurant_rejected")
-                        return {
-                            "rejected": True,
-                            "rejection_reason": restaurant.rejection_reason,
-                            **_login_tokens(user),
-                        }
-                    elif restaurant.status == "approved" and not restaurant.is_active:
-                        log.info("partner_restaurant_inactive")
-                        return {
-                            "requiresApproval": True,
-                            **_login_tokens(user),
-                        }
+                partner_extras = _partner_login_extras(db, user)
+                if partner_extras.get("requiresOnboarding") or partner_extras.get("requiresApproval") or partner_extras.get("rejected"):
+                    return {**partner_extras, **_login_tokens(user)}
 
         log.info("google_login_success email=%s role=%s", email, user.role)
         return {
@@ -338,47 +336,10 @@ def login(data: TokenRequest, db: Session = Depends(get_db)):
             db.commit()
             db.refresh(user)
 
-            # If partner, check if restaurant profile exists
             if data.role == "partner":
-                from app.models.restaurant import RestaurantProfile
-                restaurant = db.query(RestaurantProfile).filter(
-                    RestaurantProfile.user_id == user.id
-                ).first()
-                
-                if not restaurant:
-                    log.info("partner_onboarding_required_existing")
-                    return {
-                        "requiresOnboarding": True,
-                        **_login_tokens(user),
-                    }
-
-            # If partner, check restaurant status
-            if data.role == "partner":
-                from app.models.restaurant import RestaurantProfile
-                restaurant = db.query(RestaurantProfile).filter(
-                    RestaurantProfile.user_id == user.id
-                ).first()
-                
-                if restaurant:
-                    if restaurant.status == "pending":
-                        log.info("partner_restaurant_pending")
-                        return {
-                            "requiresApproval": True,
-                            **_login_tokens(user),
-                        }
-                    elif restaurant.status == "rejected":
-                        log.info("partner_restaurant_rejected")
-                        return {
-                            "rejected": True,
-                            "rejection_reason": restaurant.rejection_reason,
-                            **_login_tokens(user),
-                        }
-                    elif restaurant.status == "approved" and not restaurant.is_active:
-                        log.info("partner_restaurant_inactive")
-                        return {
-                            "requiresApproval": True,
-                            **_login_tokens(user),
-                        }
+                partner_extras = _partner_login_extras(db, user)
+                if partner_extras.get("requiresOnboarding") or partner_extras.get("requiresApproval") or partner_extras.get("rejected"):
+                    return {**partner_extras, **_login_tokens(user)}
 
         log.info("login_success email=%s role=%s", email, user.role)
         return {
@@ -424,8 +385,11 @@ def get_approved_restaurants(db: Session = Depends(get_db)):
             RestaurantProfile.is_active
         ).order_by(RestaurantProfile.created_at.desc()).all()
         
+        from app.routers.restaurant import _parse_cuisine_types
+
         result = []
         for restaurant in restaurants:
+            cuisine = _parse_cuisine_types(restaurant.cuisine_types or restaurant.cuisine)
             result.append({
                 "id": str(restaurant.id),
                 "restaurant_name": restaurant.restaurant_name,
@@ -433,14 +397,16 @@ def get_approved_restaurants(db: Session = Depends(get_db)):
                 "phone": restaurant.phone,
                 "address": restaurant.address,
                 "city": restaurant.city,
-                "state": restaurant.state,
-                "zipcode": restaurant.zipcode,
-                "cuisine_type": restaurant.cuisine_type,
+                "pincode": restaurant.pincode,
+                "cuisine": cuisine,
+                "cuisine_type": cuisine[0] if cuisine else None,
+                "food_type": restaurant.food_type,
+                "cost_for_two": float(restaurant.cost_for_two) if restaurant.cost_for_two else None,
+                "restaurant_image": restaurant.restaurant_image or restaurant.banner_image,
                 "delivery_time": restaurant.delivery_time,
                 "rating": float(restaurant.rating) if restaurant.rating else 4.0,
                 "approved_at": restaurant.approved_at,
                 "created_at": restaurant.created_at,
-                # New fields
                 "banner_image": restaurant.banner_image,
                 "logo": restaurant.logo,
                 "latitude": float(restaurant.latitude) if restaurant.latitude else None,
@@ -449,9 +415,11 @@ def get_approved_restaurants(db: Session = Depends(get_db)):
                 "delivery_fee": float(restaurant.delivery_fee) if restaurant.delivery_fee else 0,
                 "delivery_radius_km": restaurant.delivery_radius_km,
                 "is_open": restaurant.is_open,
-                "total_reviews": restaurant.total_reviews
+                "total_reviews": restaurant.total_reviews,
+                "status": restaurant.status,
+                "is_active": restaurant.is_active,
             })
-        
+
         return result
     except Exception:
         log.exception("approved_restaurants_failed")

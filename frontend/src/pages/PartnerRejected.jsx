@@ -6,7 +6,10 @@ import AlertCircle from "lucide-react/dist/esm/icons/alert-circle";
 
 export default function PartnerRejected() {
   const location = useLocation();
-  const rejectionReason = location.state?.reason || "Your application did not meet our requirements.";
+  const rejectionReason =
+    location.state?.reason ||
+    localStorage.getItem("rejection_reason") ||
+    "Your application did not meet our requirements.";
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-white flex items-center justify-center p-4">
