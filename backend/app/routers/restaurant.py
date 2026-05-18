@@ -70,7 +70,7 @@ def _parse_cuisine_types(raw: str | None) -> list[str]:
 def _serialize_profile(profile: RestaurantProfile) -> dict:
     cuisine = _parse_cuisine_types(profile.cuisine_types or profile.cuisine)
     return {
-        "id": profile.id,
+        "id": str(profile.id),
         "user_id": str(profile.user_id),
         "restaurant_name": profile.restaurant_name,
         "owner_name": profile.owner_name,

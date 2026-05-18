@@ -35,7 +35,8 @@ class Settings(BaseSettings):
     cors_origins: str = Field(
         default=(
             "http://localhost:5173,http://localhost:5174,"
-            "http://localhost:3000,https://haveit-official.vercel.app"
+            "http://localhost:3000,https://haveit-official.vercel.app,"
+            "https://haveit-in.github.io"
         ),
         validation_alias=AliasChoices("CORS_ORIGINS"),
     )

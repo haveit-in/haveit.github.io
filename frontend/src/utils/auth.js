@@ -30,108 +30,33 @@ export const setupRecaptcha = () => {
   return window.recaptchaVerifier;
 };
 
-// Google login test function
-export const loginWithGoogle = async (loginCallback) => {
-  try {
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    console.log("User:", result.user);
-    
-    const user = auth.currentUser;
-    
-    // ✅ MUST USE THIS
-    const token = await user.getIdToken();
-    
-    // Debug log
-    console.log("ID TOKEN:", token);
-    console.log("ACCESS TOKEN:", user.accessToken);
-    
-    // 🔥 CALL BACKEND THROUGH AUTH CONTEXT
-    if (loginCallback) {
-      await loginCallback(token);
-    }
-    
-    return result.user;
-  } catch (error) {
-    console.error("Google login error:", error);
-    throw error;
-  }
-};
+/** Shared Google popup → Firebase ID token → backend exchange (all roles). */
+async function loginWithGoogleRole(loginCallback, role = "user", { forceRefresh = false } = {}) {
+  const provider = new GoogleAuthProvider();
+  await signInWithPopup(auth, provider);
 
-// Partner Google login function
-export const loginWithGooglePartner = async (loginCallback) => {
-  try {
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    console.log("Partner User:", result.user);
-    
-    const user = auth.currentUser;
-    
-    // MUST USE THIS
-    const token = await user.getIdToken();
-    
-    // Debug log
-    console.log("ID TOKEN:", token);
-    console.log("ACCESS TOKEN:", user.accessToken);
-    
-    // CALL BACKEND THROUGH AUTH CONTEXT WITH ROLE AND RETURN RESPONSE
-    if (loginCallback) {
-      const response = await loginCallback(token, "partner");
-      return response;
-    }
-    
-    return result.user;
-  } catch (error) {
-    console.error("Partner Google login error:", error);
-    throw error;
+  const user = auth.currentUser;
+  if (!user) {
+    throw new Error("Google sign-in did not return a user");
   }
-};
 
-// Admin Google login function
-export const loginWithGoogleAdmin = async (loginCallback) => {
-  try {
-    // Test Firebase configuration first
-    testFirebaseConfig();
-    
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithPopup(auth, provider);
-    console.log("Admin User:", result.user);
-    
-    const user = auth.currentUser;
-    
-    // MUST USE THIS
-    const token = await user.getIdToken(true); // Force refresh token
-    
-    // Debug log
-    console.log("=== ADMIN LOGIN DEBUG ===");
-    console.log("ID TOKEN:", token);
-    console.log("ID TOKEN length:", token.length);
-    console.log("ID TOKEN segments:", token.split('.').length);
-    console.log("ID TOKEN starts with:", token.substring(0, 50) + "...");
-    console.log("ID TOKEN ends with:", token.substring(token.length - 50) + "...");
-    console.log("ACCESS TOKEN:", user.accessToken);
-    console.log("User email:", user.email);
-    console.log("User UID:", user.uid);
-    console.log("Firebase auth object:", auth);
-    console.log("Current user exists:", !!auth.currentUser);
-    
-    // Validate token format before sending
-    if (token.split('.').length !== 3) {
-      console.error("Invalid Firebase ID token format - wrong number of segments");
-      throw new Error("Invalid Firebase ID token format");
-    }
-    
-    // CALL BACKEND THROUGH AUTH CONTEXT WITH ADMIN ROLE AND RETURN RESPONSE
-    if (loginCallback) {
-      console.log("Calling backend with token and admin role...");
-      const response = await loginCallback(token, "admin");
-      console.log("Backend response:", response);
-      return response;
-    }
-    
-    return result.user;
-  } catch (error) {
-    console.error("Admin Google login error:", error);
-    throw error;
+  const token = await user.getIdToken(forceRefresh);
+  if (token.split(".").length !== 3) {
+    throw new Error("Invalid Firebase ID token format");
   }
-};
+
+  if (loginCallback) {
+    return await loginCallback(token, role);
+  }
+
+  return { user: { email: user.email, name: user.displayName } };
+}
+
+export const loginWithGoogle = (loginCallback) =>
+  loginWithGoogleRole(loginCallback, "user");
+
+export const loginWithGooglePartner = (loginCallback) =>
+  loginWithGoogleRole(loginCallback, "partner");
+
+export const loginWithGoogleAdmin = (loginCallback) =>
+  loginWithGoogleRole(loginCallback, "admin", { forceRefresh: true });

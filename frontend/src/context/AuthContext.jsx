@@ -96,7 +96,19 @@ export const AuthProvider = ({ children }) => {
       })
 
       if (!response.ok) {
-        throw new Error('Login failed')
+        let message = 'Login failed'
+        try {
+          const errBody = await response.json()
+          const detail = errBody?.detail
+          if (typeof detail === 'string') {
+            message = detail
+          } else if (Array.isArray(detail)) {
+            message = detail.map((d) => d.msg || String(d)).join(', ')
+          }
+        } catch {
+          // ignore JSON parse errors
+        }
+        throw new Error(message)
       }
 
       const result = await response.json()

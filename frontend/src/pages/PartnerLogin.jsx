@@ -1,7 +1,4 @@
 import { Link, useNavigate } from "react-router";
-import Store from "lucide-react/dist/esm/icons/store";
-import Mail from "lucide-react/dist/esm/icons/mail";
-import Lock from "lucide-react/dist/esm/icons/lock";
 import { useState } from "react";
 import { loginWithGooglePartner } from "../utils/auth.js";
 import { useAuth } from "../context/AuthContext.jsx";
@@ -13,14 +10,16 @@ export default function PartnerLogin() {
   const { login } = useAuth();
   const { handleLoginRedirect } = useRoleRedirect();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleGoogleLogin = async () => {
     try {
       setLoading(true);
+      setError('');
       const response = await loginWithGooglePartner(login);
-      
+
       logger.debug("partner login response", { requiresOnboarding: response.requiresOnboarding });
-      
+
       if (response.requiresOnboarding) {
         navigate("/partner/register");
       } else if (response.requiresApproval) {
@@ -30,11 +29,11 @@ export default function PartnerLogin() {
           state: { reason: response.rejection_reason || localStorage.getItem("rejection_reason") },
         });
       } else {
-        // Handle role-based redirect for successful login
         handleLoginRedirect(response);
       }
-    } catch (error) {
-      logger.error("Login error:", error);
+    } catch (err) {
+      logger.error("Login error:", err);
+      setError(err?.message || 'Login failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -45,22 +44,27 @@ export default function PartnerLogin() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 mb-4">
-              <img 
-                src="/image/22.png" 
-                alt="HaveIt Logo" 
-                className="h-8 w-auto"
-              />
-              <span className="text-lg font-semibold">
-                <span className="text-orange-500">HaveIt</span>{' '}
-                <span className="text-gray-900">Partner</span>
-              </span>
+            <img
+              src="/image/22.png"
+              alt="HaveIt Logo"
+              className="h-8 w-auto"
+            />
+            <span className="text-lg font-semibold">
+              <span className="text-orange-500">HaveIt</span>{' '}
+              <span className="text-gray-900">Partner</span>
+            </span>
           </Link>
           <h1 className="text-3xl font-bold mb-2">Welcome back</h1>
           <p className="text-gray-600">Sign in to your restaurant dashboard</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-          <button 
+          {error ? (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+              {error}
+            </div>
+          ) : null}
+          <button
             onClick={handleGoogleLogin}
             disabled={loading}
             className="w-full flex items-center justify-center gap-3 px-4 py-3 border-2 border-gray-200 rounded-lg hover:border-gray-300 transition-all mb-4 disabled:opacity-50 disabled:cursor-not-allowed"

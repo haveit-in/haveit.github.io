@@ -1,5 +1,7 @@
 # app/models/restaurant.py
 
+import uuid
+
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime, Text, func, Numeric
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -9,7 +11,8 @@ from .user import Base
 class RestaurantProfile(Base):
     __tablename__ = "restaurant_profiles"
 
-    id = Column(Integer, primary_key=True, index=True)
+    # UUID PK (must match orders.menu_items.menu_categories FKs and admin approve path)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, index=True)
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, unique=True)
 
     restaurant_name = Column(String, nullable=True)

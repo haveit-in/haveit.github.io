@@ -27,9 +27,9 @@ export default function AdminLogin() {
           window.location.href = '/admin/login'
         }, 2000)
       }
-    } catch (error) {
-      console.error('Admin login failed:', error)
-      setError('Login failed. Please try again.')
+    } catch (err) {
+      console.error('Admin login failed:', err)
+      setError(err?.message || 'Login failed. Please try again.')
     } finally {
       setSubmitting(false)
     }

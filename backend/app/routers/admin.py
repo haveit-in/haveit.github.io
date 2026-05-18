@@ -1,4 +1,5 @@
 from datetime import datetime
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
@@ -41,7 +42,7 @@ def get_restaurants(
 
 @router.post("/admin/restaurants/{id}/approve")
 def approve_restaurant(
-    id: int,
+    id: UUID,
     db: Session = Depends(get_db),
     user=Depends(require_admin),
 ):
@@ -65,8 +66,6 @@ def approve_restaurant(
     admin_id = _admin_user_id(user)
     if admin_id:
         try:
-            from uuid import UUID
-
             profile.approved_by = UUID(str(admin_id))
         except (ValueError, TypeError):
             pass
@@ -77,7 +76,7 @@ def approve_restaurant(
 
 @router.post("/admin/restaurants/{id}/reject")
 def reject_restaurant(
-    id: int,
+    id: UUID,
     request: RejectRequest,
     db: Session = Depends(get_db),
     user=Depends(require_admin),

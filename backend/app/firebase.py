@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from firebase_admin import auth, credentials
 
 load_dotenv(".env.local")
+load_dotenv(".env")
 
 log = logging.getLogger(__name__)
 

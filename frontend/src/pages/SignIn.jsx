@@ -20,22 +20,22 @@ export default function SignIn() {
   const [phone, setPhone] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [touched, setTouched] = useState(false)
+  const [error, setError] = useState('')
 
   const handleGoogleLogin = async () => {
     try {
       setSubmitting(true)
+      setError('')
       const response = await loginWithGoogle(login)
-      console.log("Login response:", response)
-      
-      // Handle role-based redirect for successful login
-      if (response && response.user) {
+
+      if (response?.user) {
         handleLoginRedirect(response)
       } else {
         navigate('/')
       }
-    } catch (error) {
-      console.error("Google login failed:", error)
-      alert("Login failed. Please try again.")
+    } catch (err) {
+      console.error('Google login failed:', err)
+      setError(err?.message || 'Login failed. Please try again.')
     } finally {
       setSubmitting(false)
     }
@@ -80,6 +80,12 @@ export default function SignIn() {
             Log in
           </h2>
           <p className="authHint">Use your mobile number, or continue with Google/Facebook.</p> */}
+
+          {error && (
+            <p className="authHint" style={{ color: '#dc2626', marginBottom: 12 }} role="alert">
+              {error}
+            </p>
+          )}
 
           <div className="socialRow">
             <SocialButton
