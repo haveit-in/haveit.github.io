@@ -105,6 +105,14 @@ function App() {
                 path="/profile"
                 element={<ProfilePage activeMode={activeMode} />}
               />
+              <Route
+                path="/user/Homepage"
+                element={
+                  <ProtectedRoute requiredRole="user">
+                    <Landing onOpenLogin={openLogin} onOpenSignup={openSignup} activeMode={activeMode} setActiveMode={setActiveMode} />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/about" element={<AboutUs />} />
               <Route path="/faqs" element={<FAQs />} />
               <Route path="/contact" element={<ContactUs />} />

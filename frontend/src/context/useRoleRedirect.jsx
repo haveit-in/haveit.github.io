@@ -16,7 +16,7 @@ export const useRoleRedirect = () => {
         navigate('/partner/dashboard')
         break
       case 'user':
-        navigate('/user/dashboard')
+        navigate('/user/Homepage')
         break
       default:
         navigate('/')
