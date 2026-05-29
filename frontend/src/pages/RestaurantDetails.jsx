@@ -171,10 +171,10 @@ const RestaurantDetails = () => {
           <div className="text-red-500 text-xl mb-4">⚠️</div>
           <p className="text-red-500 mb-4">Error: {error}</p>
           <button 
-            onClick={() => navigate('/restaurants')}
+            onClick={() => navigate(-1)}
             className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
           >
-            Back to Restaurants
+            Go Back
           </button>
         </div>
       </div>
@@ -202,7 +202,7 @@ const RestaurantDetails = () => {
           
           {/* Back Button */}
           <button 
-            onClick={() => navigate('/restaurants')}
+            onClick={() => navigate(-1)}
             className="absolute top-4 left-4 p-2 bg-white/90 hover:bg-white rounded-full transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
